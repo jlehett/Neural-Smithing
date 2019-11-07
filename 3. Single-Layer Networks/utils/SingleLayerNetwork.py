@@ -43,6 +43,13 @@ class SingleLayerNetwork:
             self.outputNodes[i] = self.activationFunc(self.outputNodes[i])
         return self.outputNodes
 
+    def getWeights(self):
+        """
+            Return the networks currents weights in a numpy array of size
+            ( self.outputNodes.shape[0], self.inputNodes.shape[0] )
+        """
+        return self.weights
+
 
 """
     TESTING
