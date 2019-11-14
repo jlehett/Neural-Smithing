@@ -43,6 +43,8 @@ class SingleLayerNetwork:
         if self.bias:
             inputs = np.concatenate((inputs, np.ones((inputs.shape[0], 1))), axis=1)
         self.outputNodes = np.dot(inputs, self.weights.T)
+        for i in range(len(self.outputNodes)):
+            self.outputNodes[i] = self.activationFunc(self.outputNodes[i])
         return self.outputNodes
 
     def getWeights(self):

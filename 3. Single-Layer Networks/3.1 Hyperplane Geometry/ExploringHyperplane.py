@@ -6,7 +6,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import os, sys
-from math import sqrt, pi, acos
+from math import sqrt, pi, acos, e
 
 
 #plt.style.use('dark_background')
@@ -19,7 +19,7 @@ from math import sqrt, pi, acos
 sys.path.append('../')
 # Import any python modules from parent directory
 from utils.SingleLayerNetwork import SingleLayerNetwork
-from utils.auxfunctions import frange
+from utils.auxfunctions import frange, plot_decision_boundary
 
 
 """
@@ -312,6 +312,81 @@ fig.legend([noBiasHyperplane, biasHyperplane],
            ['Hyperplane (No Bias)', 'Hyperplane (Bias)'],
            loc='upper right', borderaxespad=1.0, fontsize=15)
 fig.legend(loc='upper left', borderaxespad=1.0, fontsize=15)
+
+# Show graphs
+figManager = plt.get_current_fig_manager()
+figManager.window.showMaximized()
+plt.show()
+
+
+"""
+    The node nonlinearity f controls how the output vaies as the distance
+    from x to the node changes. When f is a binary hard-limiting function
+    as in a linear threshold unit, the node divides the input space with
+    a hyperplane, producing 0 for inputs on one side of the plane and 1
+    for inputs on the other side. With a softer nonlinearity such as the
+    sigmoid, the transition from 0 to 1 is smoother but other properties
+    are similar.
+"""
+# Create sigmoid function for activation
+def sigmoid(x):
+    return 1.0 / (1.0 + e ** (-x))
+
+# Create linear threshold function for activation
+def linearThreshold(x):
+    if x > 0.0:
+        return 1.0
+    if x == 0.0:
+        return 0.5
+    if x < 0.0:
+        return 0.0
+
+# Params
+DIMS = (0, 1, 0, 1)
+
+# Create the pyplot
+fig, axes = plt.subplots(1, 3)
+fig.suptitle('The magnitude of w plays the role of a scaling ' +
+             'parameter\nthat can be varied to obtain transitions ' +
+             'of varying steepness', fontsize=18)
+
+# Adjust graph parameters
+axes[0].set_xlim(DIMS[0], DIMS[1])
+axes[0].set_ylim(DIMS[2], DIMS[3])
+axes[0].set_aspect('equal', adjustable='box')
+
+axes[1].set_xlim(DIMS[0], DIMS[1])
+axes[1].set_ylim(DIMS[2], DIMS[3])
+axes[1].set_aspect('equal', adjustable='box')
+
+axes[2].set_xlim(DIMS[0], DIMS[1])
+axes[2].set_ylim(DIMS[2], DIMS[3])
+axes[2].set_aspect('equal', adjustable='box')
+
+# Create three Single Layer Networks with equivalent weight orientations,
+# have one be a linear threshold unit, and the other two have different
+# weight magnitudes
+ltu_slp = SingleLayerNetwork(2, 1, linearThreshold)
+ltu_slp.weights = np.array([[3, -3]])
+
+small_slp = SingleLayerNetwork(2, 1, sigmoid)
+small_slp.weights = np.array([[3, -3]])
+
+big_slp = SingleLayerNetwork(2, 1, sigmoid)
+big_slp.weights = np.array([[15, -15]])
+
+# Plot the decision boundary for each of the networks
+plot_decision_boundary(lambda x: ltu_slp.evaluate(x), DIMS, axes[0])
+plot_decision_boundary(lambda x: small_slp.evaluate(x), DIMS, axes[1])
+plot_decision_boundary(lambda x: big_slp.evaluate(x), DIMS, axes[2])
+
+# Set the titles of the subplots to show the weights of each network.
+axes[0].set_title("Linear Threshold Unit\nWeights: " + str(ltu_slp.weights[0]),
+                  fontsize=18)
+axes[1].set_title("Weights: " + str(small_slp.weights[0]) + "\nWeight Magnitude: " + "{0:.2f}".format(small_slp.getWeightMagnitude()),
+                  fontsize=18)
+axes[2].set_title("Weights: " + str(big_slp.weights[0]) + "\nWeight Magnitude: " + "{0:.2f}".format(big_slp.getWeightMagnitude()),
+                  fontsize=18)
 
 # Show graphs
 figManager = plt.get_current_fig_manager()
