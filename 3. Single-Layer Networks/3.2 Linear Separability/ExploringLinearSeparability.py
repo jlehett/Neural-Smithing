@@ -130,6 +130,9 @@ plt.show()
     Let's show all of them and how Single-Layer Networks in keras perform
     on them.
 """
+# Params
+EPOCHS_PER_MODEL = 5000
+
 # Define class to hold info about each Boolean function
 class BooleanFunction:
     def __init__(self, true_x, false_x, name):
@@ -146,9 +149,10 @@ class BooleanFunction:
         for pair in self.false_x:
             training_x.append(pair)
             training_y.append(0)
+        return np.array(training_x), np.array(training_y)
 
 # Define function to plot a trained model's results
-def plotModel(model, true_x, false_x, ax):
+def plotModel(model, true_x, false_x, ax, title):
     # Plot the decision boundaries for the model
     plot_decision_boundary(lambda _x: model.predict([_x]), [0, 1, 0, 1], ax)
 
@@ -165,6 +169,11 @@ def plotModel(model, true_x, false_x, ax):
     ax.set_xlim(-0.2, 1.2)
     ax.set_ylim(-0.2, 1.2)
     ax.set_aspect('equal', adjustable='box')
+    ax.set_xticks([])
+    ax.set_yticks([])
+
+    # Set the title of the subplot
+    ax.set_title(title)
 
 # Define each of the 16 boolean functions
 functions = []
@@ -280,3 +289,42 @@ functions.append(
         'TRUE'
     )
 )
+
+# Create the pyplot
+fig, axes = plt.subplots(2, 8)
+fig.suptitle('14 of 16 Boolean functions are linearly separable\n' +
+             'These graphs display decision boundaries.',
+             fontsize=14)
+
+# Print out a warning to user that this may take a while, but progress will be output below
+print('\n\nWARNING: This may take a while. Progress will be output below:\n\n')
+
+# Create models for each of the functions, and plot the trained models
+f, x, y = 0, 0, 0
+for function in functions:
+    # Create Single Layer Network
+    model = keras.models.Sequential()
+    model.add(keras.layers.Dense(1, activation='sigmoid', input_shape=(2,)))
+    model.compile(optimizer='adam', loss='mean_squared_error')
+
+    # Train the model on its dataset
+    training_x, training_y = function.getTrainingData()
+    model.fit(training_x, training_y, epochs=EPOCHS_PER_MODEL, verbose=0)
+
+    # Print progress
+    print('PROGRESS: ' + str(f+1) + ' / 16')
+
+    # Plot the trained model in the appropriate subplot
+    plotModel(model, function.true_x, function.false_x, axes[x, y], function.name)
+
+    # Increment the trackers
+    f += 1
+    x += 1
+    if x >= 2:
+        x = 0
+        y += 1
+
+# Plot the graph
+figManager = plt.get_current_fig_manager()
+figManager.window.showMaximized()
+plt.show()
