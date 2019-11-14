@@ -12,7 +12,7 @@ from math import sqrt
 class SingleLayerNetwork:
 
     def __init__(self, numInputs, numOutputs, activationFunc,
-                randomize=False):
+                randomize=False, bias=False):
         """
             Construct a single-layer neural network given the
             number of input nodes, the number of output nodes,
@@ -24,8 +24,12 @@ class SingleLayerNetwork:
         """
         # Parameters
         self.activationFunc = activationFunc
+        self.bias = bias
         # Set weights according to randomize parameter
-        self.weights = np.zeros((numOutputs, numInputs))
+        if bias:
+            self.weights = np.zeros((numOutputs, numInputs+1))
+        else:
+            self.weights = np.zeros((numOutputs, numInputs))
         if randomize:
             for i in range(self.weights.shape[0]):
                 for j in range(self.weights.shape[1]):
@@ -36,6 +40,8 @@ class SingleLayerNetwork:
             Evaluate the inputs passing through the neural network
             using the network's current weights.
         """
+        if self.bias:
+            inputs = np.concatenate((inputs, np.ones((inputs.shape[0], 1))), axis=1)
         self.outputNodes = np.dot(inputs, self.weights.T)
         return self.outputNodes
 

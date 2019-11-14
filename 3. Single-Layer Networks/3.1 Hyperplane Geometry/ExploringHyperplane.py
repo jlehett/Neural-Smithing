@@ -9,7 +9,7 @@ import os, sys
 from math import sqrt, pi, acos
 
 
-plt.style.use('dark_background')
+#plt.style.use('dark_background')
 
 """
     INTERNAL UTIL LIBRARIES
@@ -192,6 +192,126 @@ axes[1].set_aspect('equal', adjustable='box')
 axes[2].set_xlim(0, 15)
 axes[2].set_ylim(0, 15)
 axes[2].set_aspect('equal', adjustable='box')
+
+# Set global legend for the plot
+fig.legend([small_weightVector],
+           ['Weight Vector'],
+           loc='upper right', borderaxespad=1.0, fontsize=15)
+
+# Show graphs
+figManager = plt.get_current_fig_manager()
+figManager.window.showMaximized()
+plt.show()
+
+
+"""
+    The weighted sum SUM( Wj * Xj ) = 0 defines a hyperplane
+    through the origin. Inclusion of a threshold, or bias, term θ
+        u = w^(T)x + θ
+    shifts the hyperplane along w to a distance d = θ / MAG(w) from
+    the origin.
+
+    2D Visualization
+"""
+# Params
+BIAS_TERM = 80
+TARGET_MAG = 15
+
+# Create the pyplot
+fig, ax = plt.subplots(1, 1)
+fig.suptitle('Inclusion of a threshold, or bias, term θ ' +
+             '\nu = wTx - θ\n' +
+             'shifts the hyperplane along w to distance d = θ / ||w||', fontsize=18)
+
+# Create two Single Layer Networks with identical weights, however one
+# will include a bias term, and one will not.
+nonbias_slp = SingleLayerNetwork(2, 1, noActivation, bias=False)
+nonbias_slp.weights = np.array([[3, 7]])
+
+bias_slp = SingleLayerNetwork(2, 1, noActivation, bias=True)
+bias_slp.weights = np.array([[3, 7, BIAS_TERM]])
+
+# Plot the weight vector for the Single Layer Network without the bias
+scaledWeightX = [
+    -sqrt(TARGET_MAG**2 / (nonbias_slp.weights[0,0]**2 + nonbias_slp.weights[0,1]**2)) * nonbias_slp.weights[0,0],
+    sqrt(TARGET_MAG**2 / (nonbias_slp.weights[0,0]**2 + nonbias_slp.weights[0,1]**2)) * nonbias_slp.weights[0,0]
+]
+scaledWeightY = [
+    -sqrt(TARGET_MAG**2 / (nonbias_slp.weights[0,0]**2 + nonbias_slp.weights[0,1]**2)) * nonbias_slp.weights[0,1],
+    sqrt(TARGET_MAG**2 / (nonbias_slp.weights[0,0]**2 + nonbias_slp.weights[0,1]**2)) * nonbias_slp.weights[0,1]
+]
+
+# Plot this weight vector as a blue arrow
+noBiasWeightVector = ax.plot(scaledWeightX, scaledWeightY,
+        linestyle='--', color='blue', linewidth=3, label='Weight Vector (No Bias)')
+
+# Grab a point with the constant sum of 0
+if nonbias_slp.weights[0,1] != 0:
+    xcoord = 1
+    ycoord = (0 - nonbias_slp.weights[0,0] * xcoord) / nonbias_slp.weights[0,1]
+else:
+    ycoord = 1
+    xcoord = (0 - nonbias_slp.weights[0,1] * ycoord) / nonbias_slp.weights[0,0]
+
+# Form a line given this point, scaled to TARGET_MAG
+scaledPointX = [
+    -sqrt(TARGET_MAG**2 / (xcoord**2 + ycoord**2)) * xcoord,
+    sqrt(TARGET_MAG**2 / (xcoord**2 + ycoord**2)) * xcoord
+]
+scaledPointY = [
+    -sqrt(TARGET_MAG**2 / (xcoord**2 + ycoord**2)) * ycoord,
+    sqrt(TARGET_MAG**2 / (xcoord**2 + ycoord**2)) * ycoord
+]
+
+# Plot the hyperplane with constant sum of 0 (representing no bias)
+noBiasHyperplane = ax.arrow(scaledPointX[0], scaledPointY[0], 
+        scaledPointX[1]*2, scaledPointY[1]*2,
+        head_width=0.5, overhang=0.2, linestyle='-', color='red',
+        linewidth=3, label='Hyperplane (No Bias)')
+
+# Grab a point with the constant sum of 0 with bias
+if bias_slp.weights[0,1] != 0:
+    maxxcoord = TARGET_MAG
+    maxycoord = (0 - bias_slp.weights[0,0] * maxxcoord - bias_slp.weights[0,2]) / bias_slp.weights[0,1]
+else:
+    maxycoord = TARGET_MAG
+    maxxcoord = (0 - bias_slp.weights[0,1] * maxycoord - bias_slp.weights[0,2]) / bias_slp.weights[0,0]
+if bias_slp.weights[0,1] != 0:
+    minxcoord = -TARGET_MAG
+    minycoord = (0 - bias_slp.weights[0,0] * minxcoord - bias_slp.weights[0,2]) / bias_slp.weights[0,1]
+else:
+    minxcoord = -TARGET_MAG
+    minycoord = (0 - bias_slp.weights[0,1] * minycoord - bias_slp.weights[0,2]) / bias_slp.weights[0,0]
+
+# Plot the hyperplane with the constant sum of 0 with bias
+biasHyperplane = ax.arrow(minxcoord, minycoord, 
+        (maxxcoord-minxcoord), (maxycoord-minycoord),
+        head_width=0.5, overhang=0.2, linestyle='-', color='green',
+        linewidth=3, label='Hyperplane (Bias)')
+
+# Get the distance from the origin given the bias term
+distance = BIAS_TERM / nonbias_slp.getWeightMagnitude()
+
+# Plot this distance between the two hyperplanes and label it
+distanceVector = ax.plot(
+    [0,-nonbias_slp.weights[0,0]/nonbias_slp.getWeightMagnitude()*distance], 
+    [0,-nonbias_slp.weights[0,1]/nonbias_slp.getWeightMagnitude()*distance],
+    linestyle='-', color='black', linewidth=4, zorder=5,
+    label='Distance from origin along W'
+)
+ax.text(-1, -7, "θ / ||w|| = {0:.2f}".format(distance), fontsize=15)
+
+# Adjust graph parameters
+ax.grid(linewidth=1, alpha=0.5)
+ax.set_xlim(-TARGET_MAG*1.3, TARGET_MAG*1.3)
+ax.set_ylim(-TARGET_MAG*1.3, TARGET_MAG*1.3)
+ax.set_aspect('equal', adjustable='box')
+
+# Set legend for the plot
+fig.legend([noBiasHyperplane, biasHyperplane],
+           ['Hyperplane (No Bias)', 'Hyperplane (Bias)'],
+           loc='upper right', borderaxespad=1.0, fontsize=15)
+fig.legend(loc='upper left', borderaxespad=1.0, fontsize=15)
 
 # Show graphs
 figManager = plt.get_current_fig_manager()
