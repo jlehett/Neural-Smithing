@@ -4,6 +4,7 @@
 
 import numpy as np
 import random
+from math import sqrt
 
 """
     Single-Layer Network Class
@@ -40,10 +41,20 @@ class SingleLayerNetwork:
 
     def getWeights(self):
         """
-            Return the networks currents weights in a numpy array of size
+            Return the networks current weights in a numpy array of size
             ( self.outputNodes.shape[0], self.inputNodes.shape[0] )
         """
         return self.weights
+
+    def getWeightMagnitude(self, inputNum=0):
+        """
+            Return the networks current weight magnitude for the specified
+            input (or the first input if no argument is given)
+        """
+        denominator = 0.0
+        for w in self.weights[inputNum]:
+            denominator += w ** 2.0
+        return sqrt(denominator)
 
 
 """
