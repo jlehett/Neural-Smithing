@@ -65,7 +65,7 @@ class PerceptronLearningNetwork(SingleLayerNetwork):
         """
             Train the network given a batch of inputs, x, and their corresponding
             target outputs, y. Run the perceptron learning algorithm on the training
-            set for the number of times specified by the epochs parameter.s
+            set for the number of times specified by the epochs parameter.
         """
         numTrainingPoints = len(x)
         for e in range(epochs):
@@ -107,6 +107,8 @@ class PerceptronLearningNetwork(SingleLayerNetwork):
             # If verbose == True, print accuracy for each training epoch
             if verbose:
                 print('Epoch ' + str(e+1) + ' / ' + str(epochs) + ' Accuracy: ' + str(accuracy))
+            # Return final accuracy
+        return accuracy
 
 
 # Test the network's learning capabilities
