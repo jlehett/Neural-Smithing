@@ -13,68 +13,76 @@ import math
     INTERNAL UTIL LIBRARIES
 """
 
+from PerceptronLearningAlgorithm import PerceptronLearningNetwork
 # Add parent directory to the sys path
 sys.path.append('../')
 # Import any python modules from parent directory
-from utils.SingleLayerNetwork import SingleLayerNetwork
 from utils.auxfunctions import plotModel
 
 
 """
-    The perceptron learning algorithm is suitable for learning linearly
-    separable binary functions of binary inputs and is guaranteed to 
-    find a solution if the classes are linearly separable.
+    Adaline (adaptive linear neuron) networks are a single-layer network
+    with a step function as the nonlinearity. Although the perceptron was
+    analyzed assuming binary inputs, Adaline inputs may be continuous.
 
-    Unfortunately, if the classes are not linearly separable, the 
-    algorithm may not even converge and is unlikely to produce the best
-    solution when it does.
+    Weights are adjusted with thhe Widrow-Hoff learning rule to minimize
+    the difference between the output and externally supplied target.
+    
+    the Widrow-Hoff learning rule, also called the LMS algorithm or the
+    delta rule, is basically an iterative implementation of linear
+    regression. Both minimize the mean squared error of a linear fit.
 """
 
-class PerceptronLearningNetwork(SingleLayerNetwork):
+class AdalineNetwork(PerceptronLearningNetwork):
 
     def __init__(self, numInputs, numOutputs, randomize=False, bias=False):
         """
             Construct a single-layer neural network given the number of input
             nodes and the number of output nodes. This network will train
-            using the perceptron learning algorithm. The activation function
+            using the Widrow-Hoff learning rule. The activation function
             used in this network will be a linear threshold unit where
             y = -1 if u <= 0
             y = +1 if u > 0     where u is the output of the weighted sum of inputs
 
             Input, output, and target values are assumed to be +- 1
         """
-        # Define activation function
-        def ltu(x):
-            if x <= 0:
-                return -1
-            return 1
-        # Parameters
-        self.bias = bias
-        self.activationFunc = ltu
-        # Set weights according to randomize parameter
-        if bias:
-            self.weights = np.zeros((numOutputs, numInputs+1))
-        else:
-            self.weights = np.zeros((numOutputs, numInputs))
-        if randomize:
-            for i in range(self.weights.shape[0]):
-                for j in range(self.weights.shape[1]):
-                    self.weights[i, j] = random.random() * 2.0 - 1.0
+        super().__init__(numInputs, numOutputs, randomize, bias)
 
-    def train(self, x, y, epochs=1, lr=0.1, verbose=True):
+    def getOutputNoActivation(self, inputs):
+        """
+            Evaluate the inputs passing through the neural network using the
+            network's current weights. Do not pass the outputs through the
+            activation function.
+        """
+        if self.bias:
+            inputs = np.concatenate((inputs, np.ones((inputs.shape[0], 1))), axis=1)
+        self.outputNodes = np.dot(inputs, self.weights.T)
+        return self.outputNodes
+
+    def train(self, x, y, epochs=1, lr=0.1, verbose=False):
         """
             Train the network given a batch of inputs, x, and their corresponding
             target outputs, y. Run the perceptron learning algorithm on the training
             set for the number of times specified by the epochs parameter.
+
+            The error is reduced by a factor of lr each time the weights are updated.
+            Stability requires that 0 < lr < 2 and generally 0.1 < lr < 1.0. For lr=1,
+            the error on the present pattern is completely corrected in one cycle;
+            for lr > 1, it is overcorrected.
+
+            If the input patterns are linearly independent, the weights will converge
+            to unique values. If not, the corrections will be oscillatory and lr should
+            decrease over time to allow the weights to settle. One possible schedule is
+            lr = k^-1, where k indexes the iterations.
         """
         numTrainingPoints = len(x)
         for e in range(epochs):
-            # Set accuracy at beginning of epoch to 0s
+            # Set accuracy at beginning of epochs to 0s
             accuracy = 0
             # Compute the output for all training points
-            allOutputs = self.evaluate(x)
+            allOutputs = self.getOutputNoActivation(x)
             for i in range(numTrainingPoints):
-                # Grab the inputs for the specific training point
+                # Grab the input for the specific training point
                 trainingPointInputs = x[i]
                 # Grab the output for the specific training point
                 trainingPointOutput = allOutputs[i]
@@ -100,11 +108,11 @@ class PerceptronLearningNetwork(SingleLayerNetwork):
                             else:
                                 trainingPointInput = 1.0
                             # Compute delta w and apply the change
-                            deltaW = 2.0 * lr * targetVal * trainingPointInput
+                            deltaW = lr * (targetVal - outputVal) * trainingPointInput / trainingPointInput**2
                             self.weights[outputIndex, inputWeightIndex] += deltaW
             # Compute accuracy
             accuracy /= numTrainingPoints
-            # If verbose == True, print accuracy for each training epoch
+            # If verbose == True, print accuuracy for each training epoch
             if verbose:
                 print('Epoch ' + str(e+1) + ' / ' + str(epochs) + ' Accuracy: ' + str(accuracy))
             # Return final accuracy
@@ -113,12 +121,12 @@ class PerceptronLearningNetwork(SingleLayerNetwork):
 
 # Test the network's learning capabilities
 if __name__ == '__main__':
-    """"
-        Test the network on the AND and XOR Boolean functions. Show training 
-        progress in graphs.
+    """
+        Test the network on the AND and XOR Boolean functions. Show training progress
+        in graphs.
     """
     # Params
-    EPOCHS = 10
+    EPOCHS = 20
     NUM_GRAPHS = 10
 
     NUM_EPOCHS_PER_GRAPH = math.ceil(EPOCHS / NUM_GRAPHS)
@@ -149,12 +157,12 @@ if __name__ == '__main__':
         [-1]
     ])
     # Create networks
-    and_pln = PerceptronLearningNetwork(2, 1, randomize=True, bias=True)
-    xor_pln = PerceptronLearningNetwork(2, 1, randomize=True, bias=True)
+    and_aln = AdalineNetwork(2, 1, randomize=True, bias=True)
+    xor_aln = AdalineNetwork(2, 1, randomize=True, bias=True)
 
     # Create the suplots
     fig, axes = plt.subplots(2, NUM_GRAPHS)
-    fig.suptitle('Perceptron Learning Algorithm Training on AND and XOR Boolean Functions',
+    fig.suptitle('Adaline Network Training on AND and XOR Boolean Functions',
                  fontsize=18)
 
     # Label the subplots
@@ -169,16 +177,16 @@ if __name__ == '__main__':
     # of decision boundaries for every N epochs
     for i in range(NUM_GRAPHS):
         # Train each model for N more epochs
-        xor_pln.train(xor_train_x, xor_train_y, epochs=NUM_EPOCHS_PER_GRAPH, lr=0.05, verbose=False)
-        and_pln.train(and_train_x, and_train_y, epochs=NUM_EPOCHS_PER_GRAPH, lr=0.05, verbose=False)
+        xor_aln.train(xor_train_x, xor_train_y, epochs=NUM_EPOCHS_PER_GRAPH, lr=0.05, verbose=False)
+        and_aln.train(and_train_x, and_train_y, epochs=NUM_EPOCHS_PER_GRAPH, lr=0.05, verbose=False)
 
         # Plot the model
-        plotModel(xor_pln, axes[0, i], [-1.2, 1.2, -1.2, 1.2], [-1.0, 1.0])
+        plotModel(xor_aln, axes[0, i], [-1.2, 1.2, -1.2, 1.2], [-1.0, 1.0])
         axes[0, i].set_xlim(-1.2, 1.2)
         axes[0, i].set_ylim(-1.2, 1.2)
         axes[0, i].set_aspect('equal', adjustable='box')
 
-        plotModel(and_pln, axes[1, i], [-1.2, 1.2, -1.2, 1.2], [-1.0, 1.0])
+        plotModel(and_aln, axes[1, i], [-1.2, 1.2, -1.2, 1.2], [-1.0, 1.0])
         axes[1, i].set_xlim(-1.2, 1.2)
         axes[1, i].set_ylim(-1.2, 1.2)
         axes[1, i].set_aspect('equal', adjustable='box')
@@ -198,11 +206,11 @@ if __name__ == '__main__':
 
     """
         14 of the 16 Boolean functions are linearly separable.
-        Let's show all of them and how Single-Layer Networks perform when
-        using the Perceptron Learning Algorithm.
+        Let's show all of them and how Adaline networks perform when using the
+        Widrow-Hoff Learning Rule.
     """
     # Params
-    EPOCHS_PER_MODEL = 20
+    EPOCHS_PER_MODEL = 50
 
     # Define class to hold info about each Boolean function
     class BooleanFunction:
@@ -341,7 +349,7 @@ if __name__ == '__main__':
     fig, axes = plt.subplots(2, 8)
     fig.suptitle('14 of 16 Boolean functions are linearly separable.\n' +
                 'These graphs display decision boundaries formed by training\n' +
-                'Single-Layer Networks using Perceptron Learning Algorithm.',
+                'Adaline Networks using Widrow-Hoff Learning Rule.',
                 fontsize=14)
 
     # Print out a warning to user that this may take a while, but progress will be output below
@@ -351,11 +359,11 @@ if __name__ == '__main__':
     f, x, y = 0, 0, 0
     for function in functions:
         # Create Single Layer Network
-        model = PerceptronLearningNetwork(2, 1, randomize=True, bias=True)
+        model = AdalineNetwork(2, 1, randomize=True, bias=True)
 
         # Train the model on its dataset
         training_x, training_y = function.getTrainingData()
-        model.train(training_x, training_y, epochs=EPOCHS_PER_MODEL, lr=0.5, verbose=False)
+        model.train(training_x, training_y, epochs=EPOCHS_PER_MODEL, lr=0.05, verbose=False)
 
         # Print progress
         print('PROGRESS: ' + str(f+1) + ' / 16')
@@ -373,13 +381,20 @@ if __name__ == '__main__':
         for pair in function.false_x:
             axes[x, y].scatter(pair[0], pair[1], color='red', s=150)
 
-
         # Increment the trackers
         f += 1
         x += 1
         if x >= 2:
             x = 0
             y += 1
+
+    # Set caption
+    textstr = str('Notice how the Adaline networks learn the separating boundary\n' + 
+                  'that minimizes the MSE for the dataset (except XOR and XNOR which\n' +
+                  'are non-linear). The network converges on the best unique value\n' +
+                  'to classify these functions.')
+    props = dict(boxstyle='round', facecolor='wheat', alpha=1.0)
+    plt.text(-15, 2.5, textstr, fontsize=14, bbox=props)
 
     # Plot the graph
     figManager = plt.get_current_fig_manager()

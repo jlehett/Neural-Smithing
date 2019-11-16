@@ -257,12 +257,12 @@ if __name__ == '__main__':
                   'strictly increases, while the Perceptron Learning\n' +
                   'algorithm never converges.')
     props = dict(boxstyle='round', facecolor='wheat', alpha=1.0)
-    plt.text(25, 0, textstr, fontsize=14, bbox=props)
+    plt.text(25, 0.2, textstr, fontsize=14, bbox=props)
 
     # Adjust graph parameters
     ax.grid(linewidth=1, alpha=0.5)
     ax.set_xlim(-0.3, 50.3)
-    ax.set_ylim(-0.3, 1.3)
+    ax.set_ylim(0.0, 1.0)
 
     # Plot the graph
     figManager = plt.get_current_fig_manager()
