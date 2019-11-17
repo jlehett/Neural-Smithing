@@ -47,6 +47,7 @@ class AdalineNetwork(PerceptronLearningNetwork):
             Input, output, and target values are assumed to be +- 1
         """
         super().__init__(numInputs, numOutputs, randomize, bias)
+        self.iterations = 0
 
     def getOutputNoActivation(self, inputs):
         """
@@ -59,7 +60,7 @@ class AdalineNetwork(PerceptronLearningNetwork):
         self.outputNodes = np.dot(inputs, self.weights.T)
         return self.outputNodes
 
-    def train(self, x, y, epochs=1, lr=0.1, verbose=False):
+    def train(self, x, y, epochs=1, verbose=False):
         """
             Train the network given a batch of inputs, x, and their corresponding
             target outputs, y. Run the perceptron learning algorithm on the training
@@ -82,6 +83,10 @@ class AdalineNetwork(PerceptronLearningNetwork):
             # Compute the output for all training points
             allOutputs = self.getOutputNoActivation(x)
             for i in range(numTrainingPoints):
+                # Increment iterations for learning rate scheduling
+                self.iterations += 1
+                # Calculate the new learning rate from scheduling
+                lr = self.iterations ** -1
                 # Grab the input for the specific training point
                 trainingPointInputs = x[i]
                 # Grab the output for the specific training point
@@ -108,10 +113,14 @@ class AdalineNetwork(PerceptronLearningNetwork):
                             else:
                                 trainingPointInput = 1.0
                             # Compute delta w and apply the change
-                            deltaW = lr * (targetVal - outputVal) * trainingPointInput / trainingPointInput**2
+                            inputNorm = 0
+                            for tpi in trainingPointInputs:
+                                inputNorm += tpi ** 2
+                            inputNorm = math.sqrt(inputNorm)
+                            deltaW = lr * (targetVal - outputVal) * trainingPointInput / inputNorm**2
                             self.weights[outputIndex, inputWeightIndex] += deltaW
             # Compute accuracy
-            accuracy /= numTrainingPoints
+            accuracy /= numTrainingPoints 
             # If verbose == True, print accuuracy for each training epoch
             if verbose:
                 print('Epoch ' + str(e+1) + ' / ' + str(epochs) + ' Accuracy: ' + str(accuracy))
@@ -177,8 +186,8 @@ if __name__ == '__main__':
     # of decision boundaries for every N epochs
     for i in range(NUM_GRAPHS):
         # Train each model for N more epochs
-        xor_aln.train(xor_train_x, xor_train_y, epochs=NUM_EPOCHS_PER_GRAPH, lr=0.05, verbose=False)
-        and_aln.train(and_train_x, and_train_y, epochs=NUM_EPOCHS_PER_GRAPH, lr=0.05, verbose=False)
+        xor_aln.train(xor_train_x, xor_train_y, epochs=NUM_EPOCHS_PER_GRAPH, verbose=False)
+        and_aln.train(and_train_x, and_train_y, epochs=NUM_EPOCHS_PER_GRAPH, verbose=False)
 
         # Plot the model
         plotModel(xor_aln, axes[0, i], [-1.2, 1.2, -1.2, 1.2], [-1.0, 1.0])
@@ -202,7 +211,6 @@ if __name__ == '__main__':
     figManager = plt.get_current_fig_manager()
     figManager.window.showMaximized()
     plt.show()
-
 
     """
         14 of the 16 Boolean functions are linearly separable.
@@ -363,7 +371,7 @@ if __name__ == '__main__':
 
         # Train the model on its dataset
         training_x, training_y = function.getTrainingData()
-        model.train(training_x, training_y, epochs=EPOCHS_PER_MODEL, lr=0.05, verbose=False)
+        model.train(training_x, training_y, epochs=EPOCHS_PER_MODEL, verbose=False)
 
         # Print progress
         print('PROGRESS: ' + str(f+1) + ' / 16')
@@ -400,3 +408,83 @@ if __name__ == '__main__':
     figManager = plt.get_current_fig_manager()
     figManager.window.showMaximized()
     plt.show()
+
+
+    """
+        Adaline networks work with continuous inputs as well. Let's create
+        a random clustered dataset and see how well the Adaline network classifies this data.
+    """
+    # Params
+    EPOCHS = 20
+    NUM_GRAPHS = 5
+    
+    NUM_POINTS_PER_CLASS = 40
+    NOISE = 4
+
+    NUM_EPOCHS_PER_GRAPH = math.ceil(EPOCHS / NUM_GRAPHS)
+    
+    # Create the training data
+    train_x = []
+    train_y = []
+
+    classOneLine = (1, -2)
+    classTwoLine = (5, 3)
+
+    xvalues = []
+    classOneY = []
+    classTwoY = []
+
+    for _ in range(NUM_POINTS_PER_CLASS):
+        x = random.random() * 10
+        y1 = classOneLine[0] * x + classOneLine[1] + (random.random()-0.5) * 2.0 * NOISE
+        y2 = classTwoLine[0] * x + classTwoLine[1] + (random.random()-0.5) * 2.0 * NOISE
+        
+        xvalues.append(x)
+        classOneY.append(y1)
+        classTwoY.append(y2)
+
+        train_x.append([x, y1])
+        train_y.append([-1])
+
+        train_x.append([x, y2])
+        train_y.append([1])
+
+    train_x = np.asarray(train_x)
+    train_y = np.asarray(train_y)
+
+    # Create the network
+    adaline = AdalineNetwork(2, 1, randomize=False, bias=True)
+
+    # Create the subplots
+    fig, axes = plt.subplots(1, NUM_GRAPHS)
+    fig.suptitle('Adaline Network training on randomized dataset\n' +
+                 'with continuous values, and a learnable (but not completely\n' +
+                 'linearly separable) rule.',
+                 fontsize=14)
+
+    # Label the subplots
+    for y in range(1, NUM_GRAPHS+1):
+        axes[y-1].set_title('Adaline Network at\n' + str(y * int(NUM_EPOCHS_PER_GRAPH)) + ' Epochs')
+    
+    # Train each model on their respective datasets and show progress in the form
+    # of decision boundaries for every N epochs
+    for i in range(NUM_GRAPHS):
+        # Train the model for N more epochs
+        adaline.train(train_x, train_y, epochs=NUM_EPOCHS_PER_GRAPH, verbose=False)
+
+        # Plot the model
+        plotModel(adaline, axes[i], [-10.2, 20.0, -10.2, 20.0], [-1.0, 1.0], steppingSize=0.1)
+        axes[i].set_xlim(-10.2, 20.0)
+        axes[i].set_ylim(-10.2, 20.0)
+        axes[i].set_aspect('equal', adjustable='box')
+
+        # Plot the actual data for the model
+        axes[i].scatter(xvalues, classOneY, c='red', s=50)
+        axes[i].scatter(xvalues, classTwoY, c='blue', s=50)
+
+    # Plot the graph
+    figManager = plt.get_current_fig_manager()
+    figManager.window.showMaximized()
+    plt.show()
+
+    

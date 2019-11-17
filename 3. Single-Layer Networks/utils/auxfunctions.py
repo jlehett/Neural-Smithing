@@ -15,12 +15,12 @@ def frange(start, stop, step):
         i += step
     return _range
 
-def plotModel(model, ax, graphDims, valRange=(0.0, 1.0)):
+def plotModel(model, ax, graphDims, valRange=(0.0, 1.0), steppingSize=0.01):
     """
         Function that graphs a given neural network (custom, not Keras) with its
         decision boundary and hyperplane.
     """
-    plot_decision_boundary(model.evaluate, graphDims, ax, valRange=valRange)
+    plot_decision_boundary(model.evaluate, graphDims, ax, valRange=valRange, steppingSize=steppingSize)
     
     # Plot model's hyperplane
     target_mag = 10
@@ -47,14 +47,14 @@ def plotModel(model, ax, graphDims, valRange=(0.0, 1.0)):
         linewidth=3, label='Model Hyperplane', linestyle='--', color='black'
     )
 
-def plot_decision_boundary(pred_func, graphDims, ax, valRange=(0.0, 1.0)):
+def plot_decision_boundary(pred_func, graphDims, ax, valRange=(0.0, 1.0), steppingSize=0.01):
     """
         Plot decision boundary of a model as a contour plot
     """
     # Set min and max values and give it some padding
     x_min, x_max = graphDims[0] - .5, graphDims[1] + .5
     y_min, y_max = graphDims[2] - .5, graphDims[3] + .5
-    h = 0.01
+    h = steppingSize
     # Generate a grid of points with distance h between them
     xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
     # Predict the function value for the whole gid
