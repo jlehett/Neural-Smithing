@@ -63,7 +63,7 @@ class TwoHiddenLayerNetwork:
             self.w2 = np.random.rand(hiddenLayerSize2, inputSize) * 2.0 - 1.0
         else:
             self.w2 = np.zeros((hiddenLayerSize2, inputSize))
-        # Set up weights for third hidden layer
+        # Set up weights for final layer
         if bias:
             inputSize = hiddenLayerSize2 + 1
         else:
