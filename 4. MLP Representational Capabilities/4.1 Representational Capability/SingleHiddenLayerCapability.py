@@ -130,3 +130,37 @@ if __name__ == '__main__':
     figManager = plt.get_current_fig_manager()
     figManager.window.showMaximized()
     plt.show()
+
+    """
+        Testing if a one-hidden-layer network can define disjoint regions.
+    """
+    shln = SingleHiddenLayerNetwork(2, 3, randomize=False, bias=True)
+
+    # Create pyplot
+    fix, ax = plt.subplots(1, 1)
+    fig.suptitle('One-Hidden-Layer Networks Can Represent Disjoint Regions',
+                 fontsize=18)
+    
+    # Set hard-coded weights to form the example decision boundary
+    shln.w1 = np.array([
+        [0, -1, 0],
+        [1, 1, -1],
+        [-1, 1, 0]
+    ])
+
+    shln.w2 = np.array([
+        [1, 1, 1, -1.9]
+    ])
+
+    # Plot final layer output
+    plot_decision_boundary(shln.evaluateFinal, 0, [0.0, 1.0, 0.0, 1.0],
+                           ax, steppingSize=0.01)
+
+    # Add title to ax
+    ax.set_title('Disjoint Region Formed by One-Hidden Layer Net')
+
+    # Plot the graph
+    figManager = plt.get_current_fig_manager()
+    figManager.window.showMaximized()
+    plt.show()
+
