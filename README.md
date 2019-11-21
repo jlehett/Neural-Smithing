@@ -11,3 +11,4 @@ An exploration of topics found in the book Neural Smithing by Russell D. Reed.
 ## 4. MLP Representational Capabilities
 
 #### [4.1 Representational Capability](https://github.com/jlehett/Neural-Smithing/tree/master/4.%20MLP%20Representational%20Capabilities/4.1%20Representational%20Capability)
+#### [4.2 Universal Approximation Capabilities](https://github.com/jlehett/Neural-Smithing/tree/master/4.%20MLP%20Representational%20Capabilities/4.2%20Universal%20Approximation%20Capabilities)
