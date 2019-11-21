@@ -1,5 +1,17 @@
 # Neural-Smithing
-An exploration of topics found in the book Neural Smithing by Russell D. Reed.
+An exploration of topics found in the book Neural Smithing by Russell D. Reed. 
+
+Each section in this repo contains its own README.md that contains a synopsis of the important ideas found in that section,
+along with graphics to demonstrate key topics. The code found in each of the sections can be helpful to run, as they generate the graphics, along with a few interactive elements.
+
+You may find sections missing from the table of contents. Usually this is due to a section either not having much value, i.e., the introduction section, or it is because the section's content would be difficult to implement in code in any helpful or meaningful way, i.e., proofs.
+
+While this is largely a project I started so I could learn the concepts in the book myself and apply them, I am happy to share
+these notes with anyone else who is interested. If any conceptual mistakes or spelling errors are found, please let me know by either submitting a pull request to fix it yourself, or posting it in the issues section.
+
+Thank you,
+
+John Lehett
 
 ## 3. Single Layer Networks
 
