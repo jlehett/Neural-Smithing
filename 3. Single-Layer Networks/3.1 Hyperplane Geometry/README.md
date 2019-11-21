@@ -53,3 +53,6 @@ and a sigmoid function with a large ||<b>w</b>||.
 
 
 ![Graphs](https://github.com/jlehett/Neural-Smithing/blob/master/3.%20Single-Layer%20Networks/3.1%20Hyperplane%20Geometry/images/4.png)
+
+
+### [Continue to Section 3.2](https://github.com/jlehett/Neural-Smithing/tree/master/3.%20Single-Layer%20Networks/3.2%20Linear%20Separability)
