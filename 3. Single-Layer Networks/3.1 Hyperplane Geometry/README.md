@@ -1,4 +1,4 @@
-### 3.1 Hyperplane Geometry
+## 3.1 Hyperplane Geometry
 
 The output of a single-layer network can be seen as:
 
