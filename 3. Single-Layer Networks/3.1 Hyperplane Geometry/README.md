@@ -41,7 +41,7 @@ the bias term changes the hyperplane.
 
 The node nonlinearity <i>f</i> controls how the output varies as the distance from <b>x</b> to the node hyperplane changes.
 
-When <i>f</i> is a binary hard-limitin function as in a linear threshold unit, the node divides the input space with a hyperplane,
+When <i>f</i> is a binary hard-limiting function as in a linear threshold unit, the node divides the input space with a hyperplane,
 producing 0 for inputs on one side of the plane and 1 for inputs on the other side.
 
 With a softer nonlinearity such as sigmoid, the magnitude of <b>w</b> plays the role of a scaling parameter that can be varied
