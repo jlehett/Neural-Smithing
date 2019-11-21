@@ -19,3 +19,5 @@ As we can see, the network fails to learn the XOR function, but it learns the AN
 
 
 As we can see, the XOR and XNOR functions are indeed failing to be classified correctly. The rest of the functions have been classified correctly. Training for more epochs would serve to tighten up their decision boundaries.
+
+### [Continue to Section 3.3](https://github.com/jlehett/Neural-Smithing/tree/master/3.%20Single-Layer%20Networks/3.3%20Hyperplane%20Capacity)
