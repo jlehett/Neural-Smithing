@@ -39,3 +39,6 @@ This probability is plotted below as a function of <i>N</i> / (<i>d</i> + 1) for
 When <i>d</i> is large, <i>f</i>(<i>N</i>, <i>d</i>) is greater than 1/2 as long as <i>N</i> < 2(<i>d</i> + 1) and less than 1/2 for <i>N</i> > 2(<i>d</i> + 1). As <i>d</i> becomes large, the transition becomes steeper and almost all dichotomies of <i>N</i> < 2(<i>d</i> + 1) are linearly separable while almost all dichotomies of more points are not.
 
 When <i>N</i> < 2<i>d</i>, generalization may be poor because there is a high probability that the training points will be linearly separable even if the function generating the labels is not; the network is underconstrained and the solution is unlikely to generalize well to new patterns. In linear regression, a common heuristic is to require <i>N</i> ≥ 3<i>d</i> or more training patterns to avoid overfitting.
+
+
+### [Continue to Section 3.4](https://github.com/jlehett/Neural-Smithing/tree/master/3.%20Single-Layer%20Networks/3.4%20Learning%20Rules%20for%20Single-Layer%20Networks)
