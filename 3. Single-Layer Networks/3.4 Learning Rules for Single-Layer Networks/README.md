@@ -82,3 +82,6 @@ Finally, since Adaline networks are capable of accepting continuous inputs, we t
 ![Graphs](https://github.com/jlehett/Neural-Smithing/blob/master/3.%20Single-Layer%20Networks/3.4%20Learning%20Rules%20for%20Single-Layer%20Networks/images/7.png)
 
 As we can see by the graph, the Adaline network successfully learned how to classify each cluster correctly.
+
+
+### [Continue to Section 4.1](https://github.com/jlehett/Neural-Smithing/tree/master/4.%20MLP%20Representational%20Capabilities/4.1%20Representational%20Capability)
