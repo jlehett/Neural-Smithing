@@ -189,8 +189,8 @@ if __name__ == '__main__':
         axes[0, i].scatter([-1, 1], [1, -1], c='blue', s=150)
         axes[0, i].scatter([-1, 1], [-1, 1], c='red', s=150)
         
-        axes[1, i].scatter([1], [1], c='blue', s=150)
-        axes[1, i].scatter([-1, -1, 1], [-1, 1, -1], c='red', s=150)
+        axes[1, i].scatter([-1, 1], [1, -1], c='blue', s=150)
+        axes[1, i].scatter([-1, 1], [-1, 1], c='red', s=150)
 
     # Set caption
     textstr = str('Notice how the Pocket Algorithm only changes when\n' +
