@@ -64,5 +64,5 @@ inputDimension = float(input('How many dimensions is the input to the network? '
 desiredApproxError = float(input('What is the desired approximation error? '))
 
 print('\nThe minimum number of hidden nodes should be ' +
-      str(getMinNumTrainingSamples(numHiddenNodes, inputDimension, desiredApproxError)) +
+      str(getMinNumHiddenNodes(numTrainingSamples, inputDimension, desiredApproxError)) +
       '.')
