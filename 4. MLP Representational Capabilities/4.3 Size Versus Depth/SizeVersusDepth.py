@@ -44,6 +44,7 @@ plot_decision_boundary(
     0, [-1, 1, -1, 1], ax, steppingSize=0.01
 )
 
+plt.title('Ground Truth Decision Boundary', fontsize=18)
 plt.show()
 
 # Create the dataset based on the classifier function
@@ -81,6 +82,8 @@ plot_decision_boundary(
     0, [-1, 1, -1, 1], ax, steppingSize=0.01
 )
 
+plt.title('Single-Hidden-Layer Network @ 500 Epochs\n' +
+          '(20 nodes in Hidden Layer)', fontsize=18)
 plt.show()
 
 # Create two-hidden-layer network
@@ -104,4 +107,7 @@ plot_decision_boundary(
     0, [-1, 1, -1, 1], ax, steppingSize=0.01
 )
 
+plt.title('Two-Hidden-Layer Network @ 500 Epochs\n' +
+          '(10 nodes in each Hidden Layer, total 20 nodes)',
+          fontsize=18)
 plt.show()
