@@ -13,6 +13,7 @@ def plot_decision_boundary(pred_func, outputNum, graphDims, ax, valRange=(0.0, 1
     xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
     # Predict the function value for the whole gid
     Z = pred_func(np.c_[xx.ravel(), yy.ravel()])
+    print(Z.shape)
     Z = Z[:, outputNum]
     Z = Z.reshape(xx.shape)
     # Plot the contour and training examples
