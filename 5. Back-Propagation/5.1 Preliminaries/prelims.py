@@ -51,4 +51,52 @@ ffn = FeedforwardNetwork(
 )
 
 # Print out the resulting output of the network
-print(feedforward([1, 1, 1, 1, 1], ffn, sigmoid))
+output = feedforward([1, 1, 1, 1, 1], ffn, sigmoid)
+
+print('\nThe resulting output for the neural network with input vector ' +
+      '[1, 1, 1, 1, 1] is: ' + str(output) + '\n\n')
+
+
+"""
+    Unless the network is perfectly trained, the network outputs will
+    differ somewhat from the desired outputs. The significance of these
+    differences is measured by an error (or cost) function E. In this
+    section, we will use the SSE error function.
+"""
+
+# Define the SSE error function
+def SSE(inputs, network, targetOutputs):
+    # Convert outputs to numpy array for easier calculations
+    targetOutputs = np.asarray(targetOutputs)
+    # First, compute the network outputs on the given inputs
+    networkOutputs = feedforward(inputs, network, sigmoid)
+    # Compute the SSE for the network on the given inputs
+    
+    # Compute the squared difference of each output to its corresponding
+    # targets. This is done easily using numpy arrays.
+    squaredDifferenceArray = (networkOutputs - targetOutputs) ** 2
+    # Add each of these errors up. Again this is done easily in numpy.
+    totalError = np.sum(squaredDifferenceArray)
+    # Divide the total error by 2 and you have the final resulting SSE.
+    totalError /= 2.0
+    return totalError
+
+# Test SSE
+error = SSE(
+            [
+                [1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 0],
+                [1, 0, 1, 0, 1],
+                [0, 1, 0, 0, 1]
+            ],
+            ffn,
+            [
+                [1, 0, 1],
+                [0, 0, 0],
+                [0, 1, 0],
+                [0, 1, 1]
+            ]
+        )
+
+print('The resulting error for the neural network provided in section 2 ' +
+      'of the code is: ' + str(error) + '\n\n')
