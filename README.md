@@ -24,3 +24,5 @@ John Lehett
 
 #### [4.1 Representational Capability](https://github.com/jlehett/Neural-Smithing/tree/master/4.%20MLP%20Representational%20Capabilities/4.1%20Representational%20Capability)
 #### [4.2 Universal Approximation Capabilities](https://github.com/jlehett/Neural-Smithing/tree/master/4.%20MLP%20Representational%20Capabilities/4.2%20Universal%20Approximation%20Capabilities)
+#### [4.3 Size Versus Depth](https://github.com/jlehett/Neural-Smithing/tree/master/4.%20MLP%20Representational%20Capabilities/4.3%20Size%20Versus%20Depth)
+#### [4.4 Capacity Versus Size](https://github.com/jlehett/Neural-Smithing/tree/master/4.%20MLP%20Representational%20Capabilities/4.4%20Capacity%20Versus%20Size)
