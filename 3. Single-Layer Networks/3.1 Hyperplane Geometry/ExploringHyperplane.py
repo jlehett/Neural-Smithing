@@ -391,4 +391,4 @@ axes[2].set_title("Weights: " + str(big_slp.weights[0]) + "\nWeight Magnitude: "
 # Show graphs
 figManager = plt.get_current_fig_manager()
 figManager.window.showMaximized()
-plt.show()
+plt.show(
