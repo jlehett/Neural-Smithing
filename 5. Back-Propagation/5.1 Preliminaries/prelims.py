@@ -17,6 +17,7 @@ import math
 sys.path.append('../')
 # Import any python modules from parent directory
 from utils.auxfunctions import FeedforwardNetwork
+from utils.auxfunctions import sigmoid
 
 
 """
@@ -28,3 +29,26 @@ from utils.auxfunctions import FeedforwardNetwork
     function that stores the weights of each layer in an array. The code written below
     performs a forward pass on the network.
 """
+
+# Feedforward function for determining output of network given an input
+def feedforward(inputs, network, activationFunction):
+    # convert inputs to numpy array for easier calculations
+    inputs = np.asarray(inputs)
+    # Iterate through each layer of the network
+    currentLayer = inputs
+    for layerNum in range(len(network.weights)):
+        # Perform weighted addition
+        currentLayer = np.dot(currentLayer, network.weights[layerNum])
+        # Apply activation function
+        currentLayer = activationFunction(currentLayer)
+    # Return the final output
+    return currentLayer
+
+# Define a network with an input size of 5, 3 hidden layers each with 5
+# nodes, and an output layer of size 3.
+ffn = FeedforwardNetwork(
+    5, [5, 5, 5], 3, randomize=True
+)
+
+# Print out the resulting output of the network
+print(feedforward([1, 1, 1, 1, 1], ffn, sigmoid))
