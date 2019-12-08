@@ -31,7 +31,7 @@ from utils.auxfunctions import sigmoid
 # basic mult-layer network class setup in the auxfunctions module
 class FeedforwardFunctionNetwork(MultiLayerNetwork):
     
-    def feedforward(self, inputs, activationFunction):
+    def feedforward(self, inputs):
         # Fill the input nodes
         if self.bias:
             for input_ in inputs:
@@ -53,7 +53,7 @@ class FeedforwardFunctionNetwork(MultiLayerNetwork):
 
 # Construct the network
 network = FeedforwardFunctionNetwork(
-    2, [3, 3], 1, bias=True, randomize=True
+    2, [3, 3], 1, sigmoid, bias=True, randomize=True
 )
 
 # Perform the feedforward function on a given set of inputs
@@ -63,11 +63,26 @@ networkOutput = network.feedforward(
         [-1, 1],
         [1, -1],
         [1, 1]
-    ],
-    sigmoid
+    ]
 )
 
 # Print out the network's output
 print('\n\nThe network\'s output on the given input is:\n')
 print(networkOutput)
 print('\n')
+
+
+"""
+    Unless the network is perfectly trained, the network outputs will
+    differ somewhat from the desired outputs. The significance of these
+    differences is measured by an error (or cost) function, E. In the
+    following code, we use the SSE error function.
+"""
+
+# Create a subclass that adds an SSE error function to the multi-layer
+# network subclass created above that already contains a
+# feedforward function.
+class SSEFunctionNetwork(FeedforwardFunctionNetwork):
+
+    def SSE(self, inputs, targetOutputs, activationFunction):
+        pass

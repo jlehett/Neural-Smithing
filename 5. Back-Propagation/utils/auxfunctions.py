@@ -23,7 +23,10 @@ def sigmoid(x):
 class MultiLayerNetwork:
 
     def __init__(self, inputSize, hiddenSizes, outputSize,
+                 activationFunction,
                  bias=True, randomize=True):
+        # Set class activationFunction property
+        self.activationFunction = activationFunction
         # If bias is set to true, we must add 1 to the input size
         if bias:
             inputSize += 1
