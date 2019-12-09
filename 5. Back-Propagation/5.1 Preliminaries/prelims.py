@@ -43,13 +43,13 @@ class FeedforwardFunctionNetwork(MultiLayerNetwork):
             self.hiddenNodes[i] = np.dot(
                 prevLayer, self.weights[i]
             )
-            prevLayer = activationFunction(self.hiddenNodes[i])
+            prevLayer = self.activationFunction(self.hiddenNodes[i])
         # Fill in the output nodes
         self.outputNodes = np.dot(
             prevLayer, self.weights[-1]
         )
         # Return the activated output layer
-        return activationFunction(self.outputNodes)
+        return self.activationFunction(self.outputNodes)
 
 # Construct the network
 network = FeedforwardFunctionNetwork(
@@ -84,5 +84,40 @@ print('\n')
 # feedforward function.
 class SSEFunctionNetwork(FeedforwardFunctionNetwork):
 
-    def SSE(self, inputs, targetOutputs, activationFunction):
-        pass
+    def SSE(self, inputs, targetOutputs):
+        # Convert target outputs to numpy array
+        targetOutputs = np.asarray(targetOutputs)
+        # Get the network outputs through feedforward function
+        networkOutputs = self.feedforward(inputs)
+        # Obtain the error function specified
+        sse = 0.5 * np.sum(
+            (targetOutputs - networkOutputs) ** 2
+        )
+        # Return the final sse value
+        return sse
+
+# Construct the network
+network = SSEFunctionNetwork(
+    2, [3, 3], 1, sigmoid, bias=True, randomize=True
+)
+
+# Perform the SSE function on a given set of inputs
+networkSSE = network.SSE(
+    [
+        [-1, -1],
+        [-1, 1],
+        [1, -1],
+        [1, 1]
+    ],
+    [
+        [0],
+        [0],
+        [0],
+        [1]
+    ]
+)
+
+# Print out the network's SSE
+print('\n\nThe network\'s SSE on the given input is:\n')
+print(networkSSE)
+print('\n')
