@@ -15,6 +15,11 @@ from math import e
 def sigmoid(x):
     return 1.0 / (1.0 + e ** (-x))
 
+# Define sigmoid derivative function
+@np.vectorize
+def sigmoidDerivative(x):
+    return sigmoid(x) * (1.0 - sigmoid(x))
+
 
 """
     Multi-Layer Network class 
@@ -23,10 +28,11 @@ def sigmoid(x):
 class MultiLayerNetwork:
 
     def __init__(self, inputSize, hiddenSizes, outputSize,
-                 activationFunction,
+                 activationFunction, activationDerivative,
                  bias=True, randomize=True):
-        # Set class activationFunction property
+        # Set class activation properties
         self.activationFunction = activationFunction
+        self.activationDerivative = activationDerivative
         # If bias is set to true, we must add 1 to the input size
         if bias:
             inputSize += 1

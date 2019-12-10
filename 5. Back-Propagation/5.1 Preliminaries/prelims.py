@@ -17,7 +17,7 @@ import math
 sys.path.append('../')
 # Import any python modules from parent directory
 from utils.auxfunctions import MultiLayerNetwork
-from utils.auxfunctions import sigmoid
+from utils.auxfunctions import sigmoid, sigmoidDerivative
 
 
 """
@@ -28,7 +28,7 @@ from utils.auxfunctions import sigmoid
 """
 
 # Create a subclass that adds a feedforward function to the
-# basic mult-layer network class setup in the auxfunctions module
+# basic multi-layer network class setup in the auxfunctions module
 class FeedforwardFunctionNetwork(MultiLayerNetwork):
     
     def feedforward(self, inputs):
@@ -51,25 +51,26 @@ class FeedforwardFunctionNetwork(MultiLayerNetwork):
         # Return the activated output layer
         return self.activationFunction(self.outputNodes)
 
-# Construct the network
-network = FeedforwardFunctionNetwork(
-    2, [3, 3], 1, sigmoid, bias=True, randomize=True
-)
+if __name__ == '__main__':
+    # Construct the network
+    network = FeedforwardFunctionNetwork(
+        2, [3, 3], 1, sigmoid, sigmoidDerivative, bias=True, randomize=True
+    )
 
-# Perform the feedforward function on a given set of inputs
-networkOutput = network.feedforward(
-    [
-        [-1, -1],
-        [-1, 1],
-        [1, -1],
-        [1, 1]
-    ]
-)
+    # Perform the feedforward function on a given set of inputs
+    networkOutput = network.feedforward(
+        [
+            [-1, -1],
+            [-1, 1],
+            [1, -1],
+            [1, 1]
+        ]
+    )
 
-# Print out the network's output
-print('\n\nThe network\'s output on the given input is:\n')
-print(networkOutput)
-print('\n')
+    # Print out the network's output
+    print('\n\nThe network\'s output on the given input is:\n')
+    print(networkOutput)
+    print('\n')
 
 
 """
@@ -96,28 +97,29 @@ class SSEFunctionNetwork(FeedforwardFunctionNetwork):
         # Return the final sse value
         return sse
 
-# Construct the network
-network = SSEFunctionNetwork(
-    2, [3, 3], 1, sigmoid, bias=True, randomize=True
-)
+if __name__ == '__main__':
+    # Construct the network
+    network = SSEFunctionNetwork(
+        2, [3, 3], 1, sigmoid, sigmoidDerivative, bias=True, randomize=True
+    )
 
-# Perform the SSE function on a given set of inputs
-networkSSE = network.SSE(
-    [
-        [-1, -1],
-        [-1, 1],
-        [1, -1],
-        [1, 1]
-    ],
-    [
-        [0],
-        [0],
-        [0],
-        [1]
-    ]
-)
+    # Perform the SSE function on a given set of inputs
+    networkSSE = network.SSE(
+        [
+            [-1, -1],
+            [-1, 1],
+            [1, -1],
+            [1, 1]
+        ],
+        [
+            [0],
+            [0],
+            [0],
+            [1]
+        ]
+    )
 
-# Print out the network's SSE
-print('\n\nThe network\'s SSE on the given input is:\n')
-print(networkSSE)
-print('\n')
+    # Print out the network's SSE
+    print('\n\nThe network\'s SSE on the given input is:\n')
+    print(networkSSE)
+    print('\n')
