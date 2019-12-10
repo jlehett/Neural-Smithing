@@ -32,11 +32,15 @@ from utils.auxfunctions import sigmoid, sigmoidDerivative
 class FeedforwardFunctionNetwork(MultiLayerNetwork):
     
     def feedforward(self, inputs):
+        new_inputs = []
         # Fill the input nodes
         if self.bias:
             for input_ in inputs:
-                input_.append(1.0)
-        self.inputNodes = np.asarray(inputs)
+                new_inputs.append([])
+                for value in input_:
+                    new_inputs[-1].append(value)
+                new_inputs[-1].append(1.0)
+        self.inputNodes = np.asarray(new_inputs)
         # Fill in the hidden nodes
         prevLayer = self.inputNodes
         for i in range(len(self.hiddenNodes)):

@@ -66,7 +66,7 @@ class GetDerivsNetwork(SSEFunctionNetwork):
             for hiddenIndex in range(len(self.hiddenNodes)):
                 derivs.append(
                     np.outer(
-                        self.hiddenNodes[hiddenIndex][0], 
+                        self.activationFunction(self.hiddenNodes[hiddenIndex])[0], 
                         deltas[hiddenIndex+1]
                     )
                 )
@@ -81,34 +81,34 @@ class GetDerivsNetwork(SSEFunctionNetwork):
         # Return the derivatives at the end
         return totalDerivatives
 
+if __name__ == '__main__':
+    # Construct the network
+    network = GetDerivsNetwork(
+        2, [3, 3], 1, sigmoid, sigmoidDerivative, bias=True, randomize=True
+    )
 
-# Construct the network
-network = GetDerivsNetwork(
-    2, [3, 3], 1, sigmoid, sigmoidDerivative, bias=True, randomize=True
-)
+    # Get the derivatives for the network on the given input
+    derivs = network.getDerivs(
+        [
+            [-1, -1],
+            [-1, 1],
+            [1, -1],
+            [1, 1]
+        ],
+        [
+            [0],
+            [0],
+            [0],
+            [1]
+        ]
+    )
 
-# Get the derivatives for the network on the given input
-derivs = network.getDerivs(
-    [
-        [-1, -1],
-        [-1, 1],
-        [1, -1],
-        [1, 1]
-    ],
-    [
-        [0],
-        [0],
-        [0],
-        [1]
-    ]
-)
-
-# Print out the results
-print('\n\nThe network derivatives were calculated as:\n')
-print('1st set of weights:')
-print(derivs[0])
-print('\n2nd set of weights:')
-print(derivs[1])
-print('\n3rd set of weights:')
-print(derivs[2])
-print('\n\n')
+    # Print out the results
+    print('\n\nThe network derivatives were calculated as:\n')
+    print('1st set of weights:')
+    print(derivs[0])
+    print('\n2nd set of weights:')
+    print(derivs[1])
+    print('\n3rd set of weights:')
+    print(derivs[2])
+    print('\n\n')
