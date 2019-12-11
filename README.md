@@ -26,3 +26,9 @@ John Lehett
 #### [4.2 Universal Approximation Capabilities](https://github.com/jlehett/Neural-Smithing/tree/master/4.%20MLP%20Representational%20Capabilities/4.2%20Universal%20Approximation%20Capabilities)
 #### [4.3 Size Versus Depth](https://github.com/jlehett/Neural-Smithing/tree/master/4.%20MLP%20Representational%20Capabilities/4.3%20Size%20Versus%20Depth)
 #### [4.4 Capacity Versus Size](https://github.com/jlehett/Neural-Smithing/tree/master/4.%20MLP%20Representational%20Capabilities/4.4%20Capacity%20Versus%20Size)
+
+## 5. Back-Propagation
+
+#### [5.1 Preliminaries](https://github.com/jlehett/Neural-Smithing/tree/master/5.%20Back-Propagation/5.1%20Preliminaries)
+#### [5.2 Back-Propagation: The Derivative Calculation](https://github.com/jlehett/Neural-Smithing/tree/master/5.%20Back-Propagation/5.2%20Back-Propagation:%20The%20Derivative%20Calculation)
+#### [5.3 Back-Propagation: The Weight Update Algorithm](https://github.com/jlehett/Neural-Smithing/tree/master/5.%20Back-Propagation/5.3%20Back-Propagation:%20The%20Weight%20Update%20Algorithm)
