@@ -43,6 +43,7 @@ class BatchNetwork(GetDerivsNetwork):
             # Update all of the weights
             for weightLayerIndex in range(len(self.weights)):
                 self.weights[weightLayerIndex] += -learningRate * derivatives[weightLayerIndex]
+            print(derivatives[-1])
             # If verbose, print out the training progress
             if verbose:
                 acc, loss = self.getMetrics(inputs, targetOutputs)
@@ -91,7 +92,7 @@ inputs = [
 
 # Construct target outputs
 targetOutputs = [
-    [0],
+    [1],
     [0],
     [0],
     [1],
@@ -99,6 +100,7 @@ targetOutputs = [
 
 # Train the network
 network.batchLearning(inputs, targetOutputs, 1.0, 1000, verbose=True)
+print(network.outputNodes)
 
 print(
     network.feedforward(

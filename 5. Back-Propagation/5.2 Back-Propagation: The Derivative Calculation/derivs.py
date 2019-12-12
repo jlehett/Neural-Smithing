@@ -40,20 +40,21 @@ class GetDerivsNetwork(SSEFunctionNetwork):
         # totalDerivative
         for inputNum, input_ in enumerate(inputs):
             networkOutput = self.feedforward([input_])
+            print(self.outputNodes)
             # Setup lists to hold deltas and derivs
             deltas = []
             derivs = []
             # Find the deltas for the last layer of weights
             deltas.append(
                 -(targetOutputs[inputNum] - networkOutput[0]) * 
-                sigmoidDerivative(self.outputNodes[0])
+                self.activationDerivative(self.outputNodes[0])
             )
             # Find the deltas for the rest of the layers
-            for i in range(len(self.hiddenNodes)):
+            for i in range(-1, -len(self.hiddenNodes)-1, -1):
                 deltas.append(
-                    sigmoidDerivative(self.hiddenNodes[-(i+1)][0]) *
+                    self.activationDerivative(self.hiddenNodes[i][0]) *
                     np.sum(
-                        self.weights[-(i+1)] * deltas[-1]
+                        self.weights[i] * deltas[-1]
                     )
                 )
             # Reverse the list of deltas such that the deltas in the earlier
@@ -61,7 +62,7 @@ class GetDerivsNetwork(SSEFunctionNetwork):
             deltas.reverse()
             # Find the derivatives of the network
             derivs.append(
-                np.outer(self.inputNodes[0], deltas[0])
+                np.outer(self.activationFunction(self.inputNodes[0]), deltas[0])
             )
             for hiddenIndex in range(len(self.hiddenNodes)):
                 derivs.append(
@@ -73,6 +74,7 @@ class GetDerivsNetwork(SSEFunctionNetwork):
             # Either append the derivative to the totalDerivatives if this
             # is the first input back-propagated, or add to the existing
             # totalDerivatives otherwise
+            print(derivs[-1])
             if inputNum == 0:
                 totalDerivatives = derivs
             else:
