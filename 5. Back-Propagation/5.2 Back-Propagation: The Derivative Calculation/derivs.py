@@ -40,6 +40,7 @@ class GetDerivsNetwork(SSEFunctionNetwork):
         # totalDerivative
         for inputNum, input_ in enumerate(inputs):
             networkOutput = self.feedforward([input_])
+            print('OUTPUT NO ACTIVATION')
             print(self.outputNodes)
             # Setup lists to hold deltas and derivs
             deltas = []
@@ -74,6 +75,7 @@ class GetDerivsNetwork(SSEFunctionNetwork):
             # Either append the derivative to the totalDerivatives if this
             # is the first input back-propagated, or add to the existing
             # totalDerivatives otherwise
+            print('PRINT THE LAST LINE OF DERIVATIVES')
             print(derivs[-1])
             if inputNum == 0:
                 totalDerivatives = derivs

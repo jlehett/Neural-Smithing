@@ -79,7 +79,7 @@ class BatchNetwork(GetDerivsNetwork):
 
 # Construct the network
 network = BatchNetwork(
-    2, [10, 10], 1, sigmoid, sigmoidDerivative, bias=True, randomize=True
+    2, [3], 1, sigmoid, sigmoidDerivative, bias=True, randomize=True
 )
 
 # Construct inputs for the network
@@ -92,15 +92,31 @@ inputs = [
 
 # Construct target outputs
 targetOutputs = [
-    [1],
+    [0],
     [0],
     [0],
     [1],
 ]
 
+for i in range(1000):
+    index = random.randint(0, 3)
+    print('INPUT')
+    print(inputs[index])
+    network.batchLearning(
+        [inputs[index]], [targetOutputs[index]], 1.0, 1, verbose=False
+    )
+print(network.feedforward(
+    [
+        [-1, -1],
+        [-1, 1],
+        [1, -1],
+        [1, 1]
+    ]
+))
+"""
 # Train the network
 network.batchLearning(inputs, targetOutputs, 1.0, 1000, verbose=True)
-print(network.outputNodes)
+
 
 print(
     network.feedforward(
@@ -112,3 +128,4 @@ print(
         ]
     )
 )
+"""
