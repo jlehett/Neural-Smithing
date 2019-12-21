@@ -75,6 +75,6 @@ class MultiLayerNetwork:
         # Create a single weight layer given the size and whether the
         # weights should be randomized
         if randomize:
-            return np.random.rand(size[0], size[1]) * 2.0 - 1.0
+            return np.random.normal(size=(size[0], size[1]), scale=0.3)
         else:
             return np.zeros(size)

@@ -34,11 +34,11 @@ class FeedforwardFunctionNetwork(MultiLayerNetwork):
     def feedforward(self, inputs):
         new_inputs = []
         # Fill the input nodes
-        if self.bias:
-            for input_ in inputs:
-                new_inputs.append([])
-                for value in input_:
-                    new_inputs[-1].append(value)
+        for input_ in inputs:
+            new_inputs.append([])
+            for value in input_:
+                new_inputs[-1].append(value)
+            if self.bias:
                 new_inputs[-1].append(1.0)
         self.inputNodes = np.asarray(new_inputs)
         # Fill in the hidden nodes
@@ -95,7 +95,7 @@ class SSEFunctionNetwork(FeedforwardFunctionNetwork):
         # Get the network outputs through feedforward function
         networkOutputs = self.feedforward(inputs)
         # Obtain the error function specified
-        sse = 0.5 * np.sum(
+        sse = np.sum(
             (targetOutputs - networkOutputs) ** 2
         )
         # Return the final sse value

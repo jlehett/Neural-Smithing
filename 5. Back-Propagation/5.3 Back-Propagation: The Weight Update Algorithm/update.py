@@ -43,7 +43,7 @@ class BatchNetwork(GetDerivsNetwork):
             # Update all of the weights
             for weightLayerIndex in range(len(self.weights)):
                 self.weights[weightLayerIndex] += -learningRate * derivatives[weightLayerIndex]
-            print(derivatives[-1])
+            #print(derivatives[-1])
             # If verbose, print out the training progress
             if verbose:
                 acc, loss = self.getMetrics(inputs, targetOutputs)
@@ -79,53 +79,31 @@ class BatchNetwork(GetDerivsNetwork):
 
 # Construct the network
 network = BatchNetwork(
-    2, [3], 1, sigmoid, sigmoidDerivative, bias=True, randomize=True
+    2, [2], 1, sigmoid, sigmoidDerivative, bias=True, randomize=True
 )
 
 # Construct inputs for the network
 inputs = [
-    [-1, -1],
-    [-1, 1],
-    [1, -1],
-    [1, 1]
+    [0.0, 0.0],
+    [0.0, 1.0],
+    [1.0, 0.0],
+    [1.0, 1.0]
 ]
 
 # Construct target outputs
 targetOutputs = [
-    [0],
-    [0],
-    [0],
-    [1],
+    [0.0],
+    [0.0],
+    [0.0],
+    [1.0],
 ]
 
-for i in range(1000):
-    index = random.randint(0, 3)
-    print('INPUT')
-    print(inputs[index])
-    network.batchLearning(
-        [inputs[index]], [targetOutputs[index]], 1.0, 1, verbose=False
-    )
-print(network.feedforward(
-    [
-        [-1, -1],
-        [-1, 1],
-        [1, -1],
-        [1, 1]
-    ]
-))
-"""
 # Train the network
-network.batchLearning(inputs, targetOutputs, 1.0, 1000, verbose=True)
+network.batchLearning(inputs, targetOutputs, 0.1, 1000, verbose=True)
 
 
 print(
     network.feedforward(
-        [
-            [-1, -1],
-            [-1, 1],
-            [1, -1],
-            [1, 1]
-        ]
+        inputs
     )
 )
-"""

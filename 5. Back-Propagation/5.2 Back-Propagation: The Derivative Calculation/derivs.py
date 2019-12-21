@@ -38,14 +38,14 @@ class GetDerivsNetwork(SSEFunctionNetwork):
         totalDerivatives = []
         # Iterate through each input to obtain the gradient to add to
         # totalDerivative
-        for inputNum, input_ in enumerate(inputs):
+        for inputNum, input_ in enumerate(inputs[:1]):
             networkOutput = self.feedforward([input_])
-            print('OUTPUT NO ACTIVATION')
-            print(self.outputNodes)
             # Setup lists to hold deltas and derivs
             deltas = []
             derivs = []
             # Find the deltas for the last layer of weights
+            print(targetOutputs[inputNum])
+            print(networkOutput[0])
             deltas.append(
                 -(targetOutputs[inputNum] - networkOutput[0]) * 
                 self.activationDerivative(self.outputNodes[0])
@@ -54,9 +54,7 @@ class GetDerivsNetwork(SSEFunctionNetwork):
             for i in range(-1, -len(self.hiddenNodes)-1, -1):
                 deltas.append(
                     self.activationDerivative(self.hiddenNodes[i][0]) *
-                    np.sum(
-                        self.weights[i] * deltas[-1]
-                    )
+                    np.dot(self.weights[i], deltas[-1])
                 )
             # Reverse the list of deltas such that the deltas in the earlier
             # layers are found in the earlier indices of the list
@@ -75,8 +73,6 @@ class GetDerivsNetwork(SSEFunctionNetwork):
             # Either append the derivative to the totalDerivatives if this
             # is the first input back-propagated, or add to the existing
             # totalDerivatives otherwise
-            print('PRINT THE LAST LINE OF DERIVATIVES')
-            print(derivs[-1])
             if inputNum == 0:
                 totalDerivatives = derivs
             else:
@@ -88,7 +84,7 @@ class GetDerivsNetwork(SSEFunctionNetwork):
 if __name__ == '__main__':
     # Construct the network
     network = GetDerivsNetwork(
-        2, [3, 3], 1, sigmoid, sigmoidDerivative, bias=True, randomize=True
+        2, [3, 3], 2, sigmoid, sigmoidDerivative, bias=True, randomize=True
     )
 
     # Get the derivatives for the network on the given input
@@ -100,10 +96,10 @@ if __name__ == '__main__':
             [1, 1]
         ],
         [
-            [0],
-            [0],
-            [0],
-            [1]
+            [0, 1],
+            [0, 1],
+            [0, 1],
+            [1, 1]
         ]
     )
 
@@ -113,6 +109,8 @@ if __name__ == '__main__':
     print(derivs[0])
     print('\n2nd set of weights:')
     print(derivs[1])
+    """
     print('\n3rd set of weights:')
     print(derivs[2])
     print('\n\n')
+    """
