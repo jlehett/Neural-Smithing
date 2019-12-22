@@ -38,14 +38,12 @@ class GetDerivsNetwork(SSEFunctionNetwork):
         totalDerivatives = []
         # Iterate through each input to obtain the gradient to add to
         # totalDerivative
-        for inputNum, input_ in enumerate(inputs[:1]):
+        for inputNum, input_ in enumerate(inputs):
             networkOutput = self.feedforward([input_])
             # Setup lists to hold deltas and derivs
             deltas = []
             derivs = []
             # Find the deltas for the last layer of weights
-            print(targetOutputs[inputNum])
-            print(networkOutput[0])
             deltas.append(
                 -(targetOutputs[inputNum] - networkOutput[0]) * 
                 self.activationDerivative(self.outputNodes[0])

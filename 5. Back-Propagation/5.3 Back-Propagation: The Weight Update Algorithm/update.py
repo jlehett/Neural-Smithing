@@ -43,9 +43,9 @@ class BatchNetwork(GetDerivsNetwork):
             # Update all of the weights
             for weightLayerIndex in range(len(self.weights)):
                 self.weights[weightLayerIndex] += -learningRate * derivatives[weightLayerIndex]
-            #print(derivatives[-1])
             # If verbose, print out the training progress
             if verbose:
+                networkOutputs = self.feedforward(inputs)
                 acc, loss = self.getMetrics(inputs, targetOutputs)
                 print(
                     'Epoch ' + str(e+1) + ' / ' + str(epochs) + ':' +
@@ -79,7 +79,7 @@ class BatchNetwork(GetDerivsNetwork):
 
 # Construct the network
 network = BatchNetwork(
-    2, [2], 1, sigmoid, sigmoidDerivative, bias=True, randomize=True
+    2, [4, 4], 1, sigmoid, sigmoidDerivative, bias=True, randomize=True
 )
 
 # Construct inputs for the network
@@ -93,13 +93,13 @@ inputs = [
 # Construct target outputs
 targetOutputs = [
     [0.0],
-    [0.0],
-    [0.0],
+    [1.0],
+    [1.0],
     [1.0],
 ]
 
 # Train the network
-network.batchLearning(inputs, targetOutputs, 0.1, 1000, verbose=True)
+network.batchLearning(inputs, targetOutputs, 1.0, 1000, verbose=True)
 
 
 print(
