@@ -27,6 +27,9 @@ from derivs import GetDerivsNetwork
     to the weights.
 
     The total derivative is just the sum of the per-pattern derivatives.
+
+    In batch training, every pattern p is evaluated to obain the
+    derivative terms; these are summed to obtain the total derivative.
 """
 
 # Create a subclass that adds a function to fully perform batch learning
@@ -77,33 +80,37 @@ class BatchNetwork(GetDerivsNetwork):
         return acc, loss
 
 
-# Construct the network
-network = BatchNetwork(
-    2, [4, 4], 1, sigmoid, sigmoidDerivative, bias=True, randomize=True
-)
-
-# Construct inputs for the network
-inputs = [
-    [0.0, 0.0],
-    [0.0, 1.0],
-    [1.0, 0.0],
-    [1.0, 1.0]
-]
-
-# Construct target outputs
-targetOutputs = [
-    [0.0],
-    [1.0],
-    [1.0],
-    [1.0],
-]
-
-# Train the network
-network.batchLearning(inputs, targetOutputs, 1.0, 1000, verbose=True)
-
-
-print(
-    network.feedforward(
-        inputs
+if __name__ == '__main__':
+    # Construct the network
+    network = BatchNetwork(
+        2, [4, 4], 1, sigmoid, sigmoidDerivative, bias=True, randomize=True
     )
-)
+
+    # Construct inputs for the network
+    inputs = [
+        [0.0, 0.0],
+        [0.0, 1.0],
+        [1.0, 0.0],
+        [1.0, 1.0]
+    ]
+
+    # Construct target outputs
+    targetOutputs = [
+        [0.0],
+        [1.0],
+        [1.0],
+        [1.0],
+    ]
+
+    # Train the network
+    network.batchLearning(inputs, targetOutputs, 1.0, 1000, verbose=True)
+
+    print('\n\nThe target outputs are:\n')
+    print(np.asarray(targetOutputs))
+
+    print('\n\nThe network outputs are:\n')
+    print(
+        network.feedforward(
+            inputs
+        )
+    )
