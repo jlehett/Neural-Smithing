@@ -41,7 +41,7 @@ from derivs import GetDerivsNetwork
 # 5.1 & 5.2
 class OnlineNetwork(GetDerivsNetwork):
 
-    def onlineLearning(self, inputs, targetOutputs, learningRate, epochs, verbose=True):
+    def onlineLearning(self, inputs, targetOutputs, learningRate, epochs, verbose=True, printFinal=True):
         # Iterate through loop on each epoch
         for e in range(epochs):
             # Grab the random index to use in selecting the pattern to train on for this epoch.
@@ -61,12 +61,13 @@ class OnlineNetwork(GetDerivsNetwork):
                     '\tLoss: {0:.4f}'.format(loss) + 
                     '\tAcc: {0:.4f}'.format(acc)
                 )
-        # Print out the final metrics after training
-        acc, loss = self.getMetrics(inputs, targetOutputs)
-        print(
-            '\nFinal Loss: {0:.4f}'.format(loss) +
-            '\tFinal Acc: {0:.4f}'.format(acc)
-        )
+        if printFinal:
+            # Print out the final metrics after training
+            acc, loss = self.getMetrics(inputs, targetOutputs)
+            print(
+                '\nFinal Loss: {0:.4f}'.format(loss) +
+                '\tFinal Acc: {0:.4f}'.format(acc)
+            )
         
     def getMetrics(self, inputs, targetOutputs):
         # Add a function to obtain accuracy and loss of the network to test if 
