@@ -37,7 +37,13 @@ from derivs import GetDerivsNetwork
 # 5.1 & 5.2
 class BatchNetwork(GetDerivsNetwork):
 
-    def batchLearning(self, inputs, targetOutputs, learningRate, epochs, verbose=True, printFinal=True):
+    def batchLearning(self, inputs, targetOutputs, learningRate, epochs, verbose=True, 
+                      printFinal=True, printNum=None, totalNum=None):
+        """
+            Perform batch learning on the inputs with corresponding target outputs.
+            printFinal and printNum should stay True; they are used in morphing
+            this function to fit the momentum training requirements.
+        """
         # Iterate through loop on each epoch
         derivatives = None
         for e in range(epochs):
@@ -51,8 +57,16 @@ class BatchNetwork(GetDerivsNetwork):
             if verbose:
                 networkOutputs = self.feedforward(inputs)
                 acc, loss = self.getMetrics(inputs, targetOutputs)
+                # Control what epoch number is printed depending on momentum training
+                epochNum = e
+                if printNum:
+                    epochNum = printNum
+                totalEpochs = epochs
+                if totalNum:
+                    totalEpochs = totalNum
+                # Print training progress
                 print(
-                    'Epoch ' + str(e+1) + ' / ' + str(epochs) + ':' +
+                    'Epoch ' + str(epochNum+1) + ' / ' + str(totalEpochs) + ':' +
                     '\tLoss: {0:.4f}'.format(loss) + 
                     '\tAcc: {0:.4f}'.format(acc)
                 )
@@ -63,7 +77,9 @@ class BatchNetwork(GetDerivsNetwork):
                 '\nFinal Loss: {0:.4f}'.format(loss) +
                 '\tFinal Acc: {0:.4f}'.format(acc)
             )
-        # Return the derivatives
+        # Return the last weight change value
+        for d in range(len(derivatives)):
+            derivatives[d] *= -learningRate
         return derivatives
         
     def getMetrics(self, inputs, targetOutputs):

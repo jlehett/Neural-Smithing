@@ -41,8 +41,15 @@ from derivs import GetDerivsNetwork
 # 5.1 & 5.2
 class OnlineNetwork(GetDerivsNetwork):
 
-    def onlineLearning(self, inputs, targetOutputs, learningRate, epochs, verbose=True, printFinal=True):
+    def onlineLearning(self, inputs, targetOutputs, learningRate, epochs, verbose=True,
+                       printFinal=True, printNum=None, totalNum=None):
+        """
+            Perform on-line learning on the inputs with corresponding target outputs.
+            printFinal, printNum, and totalNum should stay True; they are used in morphing
+            this function to fit the momentum training requirements.
+        """
         # Iterate through loop on each epoch
+        derivatives = None
         for e in range(epochs):
             # Grab the random index to use in selecting the pattern to train on for this epoch.
             randomIndex = random.randint(0, len(inputs) - 1)
@@ -56,8 +63,16 @@ class OnlineNetwork(GetDerivsNetwork):
             if verbose:
                 networkOutputs = self.feedforward(inputs)
                 acc, loss = self.getMetrics(inputs, targetOutputs)
+                # Control what epoch number is printed depending on momentum training
+                epochNum = e
+                if printNum:
+                    epochNum = printNum
+                totalEpochs = epochs
+                if totalNum:
+                    totalEpochs = totalNum
+                # Print training progress
                 print(
-                    'Epoch ' + str(e+1) + ' / ' + str(epochs) + ':' +
+                    'Epoch ' + str(epochNum+1) + ' / ' + str(totalEpochs) + ':' +
                     '\tLoss: {0:.4f}'.format(loss) + 
                     '\tAcc: {0:.4f}'.format(acc)
                 )
@@ -68,6 +83,10 @@ class OnlineNetwork(GetDerivsNetwork):
                 '\nFinal Loss: {0:.4f}'.format(loss) +
                 '\tFinal Acc: {0:.4f}'.format(acc)
             )
+        # Return the last weight change value
+        for d in range(len(derivatives)):
+            derivatives[d] *= -learningRate
+        return derivatives
         
     def getMetrics(self, inputs, targetOutputs):
         # Add a function to obtain accuracy and loss of the network to test if 

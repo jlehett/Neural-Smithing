@@ -34,13 +34,44 @@ from batch import BatchNetwork
 # 5.1 & 5.2
 class MomentumNetwork(OnlineNetwork, BatchNetwork):
 
-    def trainWithMomentum(trainType='batch', inputs, targetOutputs, 
-                          learningRate, epochs, verbose=True):
+    def trainWithMomentum(self, trainType, inputs, targetOutputs, 
+                          alpha, learningRate, epochs, verbose=True):
         """
             Train the network with momentum using the specified training type
-            ('batch' or 'online')
+            ('batch' or 'online'). Momentum is controlled by the alpha parameter.
         """
-        pass
+        # Iterate through each epoch of training
+        prevWeightChange = None
+        for e in range(epochs):
+            # Train for 1 epoch depending on type and grab the weight change
+            newWeightChange = None
+            if trainType == 'batch':
+                newWeightChange = self.batchLearning(
+                    inputs, targetOutputs, learningRate, 1,
+                    verbose=True, printFinal=False, printNum=e,
+                    totalNum=epochs
+                )
+            if trainType == 'online':
+                newWeightChange = self.onlineLearning(
+                    inputs, targetOutputs, learningRate, 1,
+                    verbose=True, printFinal=False, printNum=e,
+                    totalNum=epochs
+                )
+            # Add the fraction of the previous weight change
+            if prevWeightChange != None:
+                for weightLayerIndex in range(len(self.weights)):
+                    self.weights[weightLayerIndex] += alpha * prevWeightChange[weightLayerIndex]
+            # Set the previous weight change to the current one that was just produced
+            prevWeightChange = newWeightChange
+            for weightLayerIndex in range(len(self.weights)):
+                prevWeightChange[weightLayerIndex] += alpha * prevWeightChange[weightLayerIndex]
+        # Print out the final metrics after training
+        acc, loss = self.getMetrics(inputs, targetOutputs)
+        print(
+            '\nFinal Loss: {0:.4f}'.format(loss) +
+            '\tFinal Acc: {0:.4f}'.format(acc)
+        )
+
 
 
 if __name__ == '__main__':
@@ -66,7 +97,9 @@ if __name__ == '__main__':
     ]
 
     # Train the network
-    network.onlineLearning(inputs, targetOutputs, 1.0, 4000, verbose=True)
+    network.trainWithMomentum(
+        'batch', inputs, targetOutputs, alpha=1.75, learningRate=0.1, epochs=1000, verbose=True
+    )
 
     print('\n\nThe target outputs are:\n')
     print(np.asarray(targetOutputs))
