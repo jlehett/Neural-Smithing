@@ -67,15 +67,13 @@ class BatchNetwork(GetDerivsNetwork):
                 # Print training progress
                 print(
                     'Epoch ' + str(epochNum+1) + ' / ' + str(totalEpochs) + ':' +
-                    '\tLoss: {0:.4f}'.format(loss) + 
-                    '\tAcc: {0:.4f}'.format(acc)
+                    '\tLoss: {0:.4f}'.format(loss)
                 )
         if printFinal:
             # Print out the final metrics after training
             acc, loss = self.getMetrics(inputs, targetOutputs)
             print(
-                '\nFinal Loss: {0:.4f}'.format(loss) +
-                '\tFinal Acc: {0:.4f}'.format(acc)
+                '\nFinal Loss: {0:.4f}'.format(loss)
             )
         # Return the last weight change value
         for d in range(len(derivatives)):

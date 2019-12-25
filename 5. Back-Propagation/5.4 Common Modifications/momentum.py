@@ -68,8 +68,7 @@ class MomentumNetwork(OnlineNetwork, BatchNetwork):
         # Print out the final metrics after training
         acc, loss = self.getMetrics(inputs, targetOutputs)
         print(
-            '\nFinal Loss: {0:.4f}'.format(loss) +
-            '\tFinal Acc: {0:.4f}'.format(acc)
+            '\nFinal Loss: {0:.4f}'.format(loss)
         )
 
 
