@@ -21,3 +21,5 @@ And here are the results of training the two hidden layer network with only 40 w
 The network with two hidden layers obtained a much higher accuracy than the network with only a single hidden layer, despite the fact that it is using fewer weights.
 
 Of course, there are still functions where small single-hidden-layer networks are optimal and additional hidden layers are not useful. Single-hidden-layer networks may need large numbers of nodes to compute arbitrary functions, but small networks may suffice for particular functions. For example, in some studies, the one-hidden-layer nets were reported to have lower average error and perhaps generalized better.
+
+### [Continue to Section 4.4](https://github.com/jlehett/Neural-Smithing/tree/master/4.%20MLP%20Representational%20Capabilities/4.4%20Capacity%20Versus%20Size)
