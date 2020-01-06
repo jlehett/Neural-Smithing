@@ -64,7 +64,7 @@ adam = keras.optimizers.Adam(learning_rate=0.002, beta_1=0.9, beta_2=0.999, amsg
 
 # Create single-hidden-layer network
 singleHiddenNetwork = keras.models.Sequential()
-singleHiddenNetwork.add(keras.layers.Dense(20, activation='sigmoid', input_shape=(2,)))
+singleHiddenNetwork.add(keras.layers.Dense(14, activation='sigmoid', input_shape=(2,)))
 singleHiddenNetwork.add(keras.layers.Dense(1, activation='sigmoid'))
 
 singleHiddenNetwork.compile(
@@ -83,13 +83,14 @@ plot_decision_boundary(
 )
 
 plt.title('Single-Hidden-Layer Network @ 500 Epochs\n' +
-          '(20 nodes in Hidden Layer)', fontsize=18)
+          '(20 nodes in Hidden Layer)\n' +
+          '(42 weights total)', fontsize=18)
 plt.show()
 
 # Create two-hidden-layer network
 twoHiddenNetwork = keras.models.Sequential()
-twoHiddenNetwork.add(keras.layers.Dense(10, activation='sigmoid', input_shape=(2,)))
-twoHiddenNetwork.add(keras.layers.Dense(10, activation='sigmoid'))
+twoHiddenNetwork.add(keras.layers.Dense(5, activation='sigmoid', input_shape=(2,)))
+twoHiddenNetwork.add(keras.layers.Dense(5, activation='sigmoid'))
 twoHiddenNetwork.add(keras.layers.Dense(1, activation='sigmoid'))
 
 twoHiddenNetwork.compile(
@@ -108,6 +109,6 @@ plot_decision_boundary(
 )
 
 plt.title('Two-Hidden-Layer Network @ 500 Epochs\n' +
-          '(10 nodes in each Hidden Layer, total 20 nodes)',
-          fontsize=18)
+          '(5 nodes in each Hidden Layer, total 10 nodes)\n' +
+          '(40 weights total)', fontsize=18)
 plt.show()
