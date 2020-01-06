@@ -13,3 +13,5 @@ This relationship is coded up in the Python file included in this directory. Wit
 The script also solves for the relationship showing the minimum number of hidden nodes that should be used to train a classifier given the input dimensions, the number of training samples, and the desired approximation error.
 
 ![Graphs](https://github.com/jlehett/Neural-Smithing/blob/master/4.%20MLP%20Representational%20Capabilities/4.2%20Universal%20Approximation%20Capabilities/images/2.png)
+
+### [Continue to Section 4.3](https://github.com/jlehett/Neural-Smithing/tree/master/4.%20MLP%20Representational%20Capabilities/4.3%20Size%20Versus%20Depth)
