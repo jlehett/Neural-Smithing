@@ -118,30 +118,3 @@ if __name__ == '__main__':
     )
 
     print('\n\nThe number of irrelevant weights found are: ' + str(numIrrelevantWeights))
-
-    # Train the network
-    network.batchLearning(
-        inputs, targetOutputs, learningRate=1.0, epochs=1000, verbose=True
-    )
-
-    # Find irrelevant weights and change them to 0.0
-    numIrrelevantWeights = 0
-
-    for weightLayerIndex in range(len(network.weights)):
-        for w1Index in range(len(network.weights[weightLayerIndex])):
-            for w2Index in range(len(network.weights[weightLayerIndex][w1Index])):
-                if network.weights[weightLayerIndex][w1Index][w2Index] < 0.02 and network.weights[weightLayerIndex][w1Index][w2Index] > -0.02:
-                    network.weights[weightLayerIndex][w1Index][w2Index] = 0.0
-                    numIrrelevantWeights += 1
-
-    print('\n\nThe target outputs are:\n')
-    print(np.asarray(targetOutputs))
-
-    print('\n\nThe network outputs are:\n')
-    print(
-        network.feedforward(
-            inputs
-        )
-    )
-
-    print('\n\nThe number of irrelevant weights found are: ' + str(numIrrelevantWeights))
