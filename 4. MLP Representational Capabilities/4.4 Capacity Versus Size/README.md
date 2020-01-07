@@ -33,3 +33,5 @@ The single-hidden-layer network with M - 1 nodes trained on this dataset for 250
 The network with M - 1 nodes in its hidden layer is able to completely separate the given dataset correctly. However,
 it appears to generalize very poorly -- which is to be expected. The network with only 20 nodes does not classify the
 dataset with 100% accuracy, however it does appear to generalize better.
+
+### [Continue to Section 5.1](https://github.com/jlehett/Neural-Smithing/tree/master/5.%20Back-Propagation/5.1%20Preliminaries)
