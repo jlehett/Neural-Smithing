@@ -48,11 +48,11 @@ from utils.auxfunctions import mapRange
 # Define the 4-bit parity problem
 def createAllBit4Strings():
     x, y = [], []
-    maxValue = 4**2 - 1
+    maxValue = 2**2 - 1
     rangeValues = range(maxValue)
     for value in rangeValues:
         evenOnes = True
-        binaryString = '{0:04b}'.format(value)
+        binaryString = '{0:02b}'.format(value)
         binaryStringArray = list(binaryString)
         for i in range(len(binaryStringArray)):
             binaryStringArray[i] = int(binaryStringArray[i])
@@ -95,12 +95,13 @@ def createNetwork(lr, momentum):
 # stalled, as defined above
 def trainNetwork(network, epochs):
     prevMSE = None
-    for e in range(epochs):
+    for e in range(1):
         history = network.fit(x, y, verbose=0)
         newMSE = history.history['mean_squared_error'][0]
         if networkConverged(network, history):
             return e, True
         elif prevMSE == None or newMSE - prevMSE >= 10.0**(-12.0):
+            prevMSE = newMSE
             continue
         else:
             return epochs, False
@@ -108,7 +109,7 @@ def trainNetwork(network, epochs):
         
 # Create a function that determines whether a network has converged or not
 def networkConverged(network, history):
-    if history.history['mean_squared_error'][0] < 0.001:
+    if history.history['mean_squared_error'][0] < 1.2:
         return True
     predictions = network.predict(x)
     for y_index in range(len(predictions)):
@@ -120,21 +121,23 @@ def networkConverged(network, history):
 
 # Create a function to obtain results for a parameter pair
 def getParameterPairResults(lr, momentum):
+    maxEpochs = 5000
     numConverged = 0
     timeToConverge = 0
+    numTrials = 10
     
-    network = createNetwork(lr, momentum)
-    for i in range(100):
-        numEpochsToConverge, converged = trainNetwork(network, 5000)
+    for i in range(numTrials):
+        network = createNetwork(lr, momentum)
+        numEpochsToConverge, converged = trainNetwork(network, maxEpochs)
         if converged:
             timeToConverge += numEpochsToConverge
             numConverged += 1
     
     if numConverged == 0:
-        avgTimeToConverge = 5000
+        avgTimeToConverge = maxEpochs
     else:
         avgTimeToConverge = timeToConverge / numConverged
-    probabilityConvergence = numConverged / 100
+    probabilityConvergence = numConverged / numTrials
     return avgTimeToConverge, probabilityConvergence
 
 # Get the range of learning rates to test
@@ -156,13 +159,13 @@ def plotMomentumValue(momentum):
     
     progress = 1
     for lr in learningRates:
-        print('Started ' + str(progress) + '/' + str(len(learningRates)))
         avgTime, probability = getParameterPairResults(lr, momentum)
         data_avgTime.append(avgTime)
         data_probability.append(probability)
         progress += 1
     # Plot the data
     fig, ax1 = plt.subplots()
+    ax1.title.set_text('Momentum Value = {:.2f}'.format(momentum))
 
     ax1.set_xlabel('Avg Epochs to Convergence')
     ax1.set_ylabel('Learning Rate')
@@ -171,9 +174,14 @@ def plotMomentumValue(momentum):
     ax2 = ax1.twinx()
 
     ax2.set_ylabel('Probability of Convergence')
-    ax2.plot(data_x, data_probability)
+    ax2.plot(data_x, data_probability, linestyle='--')
 
     fig.tight_layout()
+    ax1.set_xticks(np.arange(0, 10.1, step=1))
+    ax1.set_yticks(np.arange(0, 5000.1, step=500))
+    ax2.set_yticks(np.arange(0, 1.1, step=0.2))
     plt.show()
 
-plotMomentumValue(0.0)
+# Plot all momentum values
+for momentumValue in momentums:
+    plotMomentumValue(momentumValue)
