@@ -138,7 +138,7 @@ def getParameterPairResults(lr, momentum):
 # Get the range of learning rates to test
 learningRates = []
 for i in range(10):
-    learningRates.append(mapRange(i, 0, 10, 0.001, 10.0))
+    learningRates.append(mapRange(i, 0, 10, 0.001, 0.01))
 
 # Get the range of momentums to test
 momentums = []
@@ -172,7 +172,7 @@ def plotMomentumValue(momentum):
     ax2.plot(data_x, data_probability, linestyle='--')
 
     fig.tight_layout()
-    ax1.set_xticks(np.arange(0, 2.1, step=1))
+    ax1.set_xticks(np.arange(0, 0.011, step=0.1))
     ax1.set_yticks(np.arange(0, 2500.1, step=500))
     ax2.set_yticks(np.arange(0, 1.1, step=0.2))
     plt.show()
