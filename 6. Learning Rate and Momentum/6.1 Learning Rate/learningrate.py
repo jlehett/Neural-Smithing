@@ -95,21 +95,16 @@ def createNetwork(lr, momentum):
 # stalled, as defined above
 def trainNetwork(network, epochs):
     prevMSE = None
-    for e in range(1):
+    for e in range(epochs):
         history = network.fit(x, y, verbose=0)
         newMSE = history.history['mean_squared_error'][0]
         if networkConverged(network, history):
             return e, True
-        elif prevMSE == None or newMSE - prevMSE >= 10.0**(-12.0):
-            prevMSE = newMSE
-            continue
-        else:
-            return epochs, False
     return epochs, False
         
 # Create a function that determines whether a network has converged or not
 def networkConverged(network, history):
-    if history.history['mean_squared_error'][0] < 1.2:
+    if history.history['mean_squared_error'][0] < 0.001:
         return True
     predictions = network.predict(x)
     for y_index in range(len(predictions)):
@@ -121,10 +116,10 @@ def networkConverged(network, history):
 
 # Create a function to obtain results for a parameter pair
 def getParameterPairResults(lr, momentum):
-    maxEpochs = 5000
+    maxEpochs = 2500
     numConverged = 0
     timeToConverge = 0
-    numTrials = 10
+    numTrials = 2
     
     for i in range(numTrials):
         network = createNetwork(lr, momentum)
@@ -142,8 +137,8 @@ def getParameterPairResults(lr, momentum):
 
 # Get the range of learning rates to test
 learningRates = []
-for i in range(37):
-    learningRates.append(mapRange(i, 0, 36, 0.001, 10))
+for i in range(10):
+    learningRates.append(mapRange(i, 0, 10, 0.001, 10.0))
 
 # Get the range of momentums to test
 momentums = []
@@ -177,11 +172,11 @@ def plotMomentumValue(momentum):
     ax2.plot(data_x, data_probability, linestyle='--')
 
     fig.tight_layout()
-    ax1.set_xticks(np.arange(0, 10.1, step=1))
-    ax1.set_yticks(np.arange(0, 5000.1, step=500))
+    ax1.set_xticks(np.arange(0, 2.1, step=1))
+    ax1.set_yticks(np.arange(0, 2500.1, step=500))
     ax2.set_yticks(np.arange(0, 1.1, step=0.2))
     plt.show()
 
-# Plot all momentum values
-for momentumValue in momentums:
-    plotMomentumValue(momentumValue)
+
+for momentum in momentums:
+    plotMomentumValue(momentum)
