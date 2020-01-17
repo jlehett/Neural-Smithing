@@ -116,10 +116,10 @@ def networkConverged(network, history):
 
 # Create a function to obtain results for a parameter pair
 def getParameterPairResults(lr, momentum):
-    maxEpochs = 2500
+    maxEpochs = 750
     numConverged = 0
     timeToConverge = 0
-    numTrials = 2
+    numTrials = 10
     
     for i in range(numTrials):
         network = createNetwork(lr, momentum)
@@ -137,8 +137,8 @@ def getParameterPairResults(lr, momentum):
 
 # Get the range of learning rates to test
 learningRates = []
-for i in range(10):
-    learningRates.append(mapRange(i, 0, 10, 0.001, 0.01))
+for i in range(20):
+    learningRates.append(mapRange(i, 0, 19, 0.001, 5.0))
 
 # Get the range of momentums to test
 momentums = []
@@ -172,8 +172,8 @@ def plotMomentumValue(momentum):
     ax2.plot(data_x, data_probability, linestyle='--')
 
     fig.tight_layout()
-    ax1.set_xticks(np.arange(0, 0.011, step=0.1))
-    ax1.set_yticks(np.arange(0, 2500.1, step=500))
+    ax1.set_xticks(np.arange(0, 5.1, step=0.5))
+    ax1.set_yticks(np.arange(0, 750.1, step=75))
     ax2.set_yticks(np.arange(0, 1.1, step=0.2))
     plt.show()
 
