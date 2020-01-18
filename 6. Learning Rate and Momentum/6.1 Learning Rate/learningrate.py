@@ -137,8 +137,8 @@ def getParameterPairResults(lr, momentum):
 
 # Get the range of learning rates to test
 learningRates = []
-for i in range(20):
-    learningRates.append(mapRange(i, 0, 19, 0.001, 5.0))
+for i in range(50):
+    learningRates.append(mapRange(i, 0, 49, 0.001, 5.0))
 
 # Get the range of momentums to test
 momentums = []
@@ -162,8 +162,8 @@ def plotMomentumValue(momentum):
     fig, ax1 = plt.subplots()
     ax1.title.set_text('Momentum Value = {:.2f}'.format(momentum))
 
-    ax1.set_xlabel('Avg Epochs to Convergence')
-    ax1.set_ylabel('Learning Rate')
+    ax1.set_xlabel('Learning Rate')
+    ax1.set_ylabel('Avg Epochs to Convergence')
     ax1.plot(data_x, data_avgTime)
     
     ax2 = ax1.twinx()
