@@ -70,7 +70,7 @@ def createNetwork(lr, randomSeed):
         bias_initializer=weightInitializer
     ))
 
-    optimizer = keras.optimizers.SGD(learning_rate=lr)
+    optimizer = keras.optimizers.SGD(learning_rate=lr, momentum=0.5)
     network.compile(
         optimizer=optimizer,
         loss=SSE,
@@ -81,9 +81,30 @@ def createNetwork(lr, randomSeed):
 
 # Create function to train networks, returning the training history
 def trainNetwork(network, epochs):
-    history = network.fit(x, y, verbose=1, epochs=epochs)
+    history = network.fit(x, y, verbose=0, epochs=epochs)
     return history
 
+# Plot the error history for the given learning rate
+def plotError(ax, errorHistory, label):
+    ax.plot(errorHistory, label=label)
 
-network = createNetwork(0.1, 500)
-trainNetwork(network, 5000)
+# Create the error curve graph given the learning rates to be tested
+def createErrorGraph(learningRates, randomSeed):
+    fig, ax = plt.subplots(1, 1)
+
+    for learningRate in learningRates:
+        network = createNetwork(learningRate, randomSeed)
+        history = trainNetwork(network, 500)
+        errorHistory = history.history['SSE']
+        plotError(ax, errorHistory, 'η = ' + str(learningRate))
+    
+    ax.title.set_text('E(t) over Time\nα = 0.5')
+    ax.set_xlabel('Epochs')
+    ax.set_ylabel('E(t)\nSSE')
+
+    ax.legend()
+
+    plt.show()
+
+
+createErrorGraph([1.5, 1.25, 1.0, 0.5, 0.1], 500)
