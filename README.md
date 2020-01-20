@@ -33,3 +33,7 @@ John Lehett
 #### [5.2 Back-Propagation: The Derivative Calculation](https://github.com/jlehett/Neural-Smithing/tree/master/5.%20Back-Propagation/5.2%20Back-Propagation:%20The%20Derivative%20Calculation)
 #### [5.3 Back-Propagation: The Weight Update Algorithm](https://github.com/jlehett/Neural-Smithing/tree/master/5.%20Back-Propagation/5.3%20Back-Propagation:%20The%20Weight%20Update%20Algorithm)
 #### [5.4 Common Modifications](https://github.com/jlehett/Neural-Smithing/tree/master/5.%20Back-Propagation/5.4%20Common%20Modifications)
+
+## 6. Learning Rate & Momentum
+
+### [6.1 Learning Rate](https://github.com/jlehett/Neural-Smithing/tree/master/6.%20Learning%20Rate%20and%20Momentum/6.1%20Learning%20Rate)
