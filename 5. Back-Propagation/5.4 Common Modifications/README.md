@@ -46,3 +46,5 @@ around 0. In the final output, these weights are all set to 0.0, and the forward
 outputs of the network after removing these unnecessary weights. The output is shown below:
 
 ![Graphs](https://github.com/jlehett/Neural-Smithing/blob/master/5.%20Back-Propagation/5.4%20Common%20Modifications/images/2.png)
+
+### [Continue to Section 6.1](https://github.com/jlehett/Neural-Smithing/tree/master/6.%20Learning%20Rate%20and%20Momentum/6.1%20Learning%20Rate)
