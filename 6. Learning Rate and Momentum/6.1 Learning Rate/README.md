@@ -36,7 +36,7 @@ time, the range of acceptable learning rates shrinks.
 The following figures demonstrate the <i>E</i>(<i>t</i>) curves for networks trained with the same initial weight vector and momentum
 value of 0.5, but with a range of learning rates. 
 
-![Graphs](https://github.com/jlehett/Neural-Smithing/blob/master/6.%20Learning%20Rate%20and%20Momentum/6.1%20Learning%20Rate/images/15.png)
+![Graphs](https://github.com/jlehett/Neural-Smithing/blob/master/6.%20Learning%20Rate%20and%20Momentum/6.1%20Learning%20Rate/images/15_large.png)
 
 As this figure demonstrates, at low learning rates, the <i>E</i>(<i>t</i>) curves are smooth, but convergence is slow. As <i>η</i>
 increases, convergence time decreases but convergence is less reliable with occasional jumps in error.
