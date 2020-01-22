@@ -94,7 +94,7 @@ def createErrorGraph(learningRates, randomSeed):
 
     for learningRate in learningRates:
         network = createNetwork(learningRate, randomSeed)
-        history = trainNetwork(network, 500)
+        history = trainNetwork(network, 200)
         errorHistory = history.history['SSE']
         plotError(ax, errorHistory, 'η = ' + str(learningRate))
     
@@ -108,3 +108,4 @@ def createErrorGraph(learningRates, randomSeed):
 
 
 createErrorGraph([1.5, 1.25, 1.0, 0.5, 0.1], 500)
+createErrorGraph([1.5, 2.0, 3.0, 4.0], 500)
