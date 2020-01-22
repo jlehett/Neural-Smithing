@@ -40,3 +40,8 @@ value of 0.5, but with a range of learning rates.
 
 As this figure demonstrates, at low learning rates, the <i>E</i>(<i>t</i>) curves are smooth, but convergence is slow. As <i>η</i>
 increases, convergence time decreases but convergence is less reliable with occasional jumps in error.
+
+Once the critical learning rate point is surpassed, the system becomes unstable and may fail to converge at all. This change can 
+sometimes be abrupt, and a network that converges at one rate may not for a rate that has increased as little as +0.01. The figure below shows the network becoming unstable for greater values of learning rates.
+
+![Graphs](https://github.com/jlehett/Neural-Smithing/blob/master/6.%20Learning%20Rate%20and%20Momentum/6.1%20Learning%20Rate/images/16.png)
