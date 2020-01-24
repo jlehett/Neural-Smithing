@@ -33,6 +33,8 @@ critical point where any higher learning rates can cause the network to derail a
 As momentum values increase, the learning rate needed to achieve very quick results shrinks rapidly. However, at the same
 time, the range of acceptable learning rates shrinks.
 
+### <i>E</i>(<i>t</i>) Graphs
+
 The following figures demonstrate the <i>E</i>(<i>t</i>) curves for networks trained with the same initial weight vector and momentum
 value of 0.5, but with a range of learning rates. 
 
@@ -45,3 +47,25 @@ Once the critical learning rate point is surpassed, the system becomes unstable 
 sometimes be abrupt, and a network that converges at one rate may not for a rate that has increased as little as +0.01. The figure below shows the network becoming unstable for greater values of learning rates.
 
 ![Graphs](https://github.com/jlehett/Neural-Smithing/blob/master/6.%20Learning%20Rate%20and%20Momentum/6.1%20Learning%20Rate/images/16.png)
+
+### Delta Attenuation in Layered Networks
+
+The first layers of layered networks often learn very slowly because the error derivatives are attenuated as they propagate back
+from the output layer toward the input. Each node nonlinearity contributes a derivative factor that is normally less than 1, so
+the derivative may become very small after passing through several layers. The result is that the gradient tends to be very small
+for weights close to the inputs and so they change very slowly.
+
+Because the partial derivatives are so small, larger learning rates may be appropriate for hidden units. If no other information
+is available, it might be assumed that the node outputs <i>y</i> are uniformly distributed on [0, 1] in which ase the expected
+attenuation due to each sigmoid derivative is <sup>1</sup>/<sub>6</sub>. It can be suggested to re-scale the back-propagated
+derivatives by 6 to compensate. This would be equivalent to increasing the learning rate by 6 for weights into the last layer,
+by 36 for weights into the second-to-last-layer, 6<sup>3</sup> = 216 for weights 3 layers back from the output, and so on. These
+are only heuristics, however, it is not a necessary fact that partial derivatives are smaller for weights farther from the
+outputs.
+
+An example of this heuristic being implemented in PyTorch on a deep neural network training on the 4-bit parity problem is
+provided in the <b>deltaattenuation.py</b> file included in this section. It produces a graph showing the <i>E</i>(<i>t</i>)
+curve over time for both a normal graph and a delta attenuated graph. Both networks were trained on the same 4-bit parity problem
+for 10,000 epochs. The graph produced is given below:
+
+![Graphs](https://github.com/jlehett/Neural-Smithing/blob/master/6.%20Learning%20Rate%20and%20Momentum/6.1%20Learning%20Rate/images/17.png)
