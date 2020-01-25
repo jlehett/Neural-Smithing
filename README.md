@@ -37,3 +37,4 @@ John Lehett
 ## 6. Learning Rate & Momentum
 
 #### [6.1 Learning Rate](https://github.com/jlehett/Neural-Smithing/tree/master/6.%20Learning%20Rate%20and%20Momentum/6.1%20Learning%20Rate)
+#### [6.2 Momentum](https://github.com/jlehett/Neural-Smithing/tree/master/6.%20Learning%20Rate%20and%20Momentum/6.2%20Momentum)
