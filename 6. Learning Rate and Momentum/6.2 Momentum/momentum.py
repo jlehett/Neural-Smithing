@@ -44,6 +44,9 @@ from utils.auxfunctions import mapRange
     momentum values on training.
 """
 
+# Set the PyTorch random number generator seed
+torch.manual_seed(random.randint(0, 10000))
+
 # Set the pytorch device to cuda if available
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -140,7 +143,28 @@ def getLosses(momentumValue, epochs):
     
     return losses
 
+# Plot the low momentums
+fig, ax = plt.subplots(1, 1)
+ax.title.set_text('E(t) over Time\nVarious Momentum Values')
+ax.set_xlabel('Epochs')
+ax.set_ylabel('E(t)\nMSE')
+
+for momentum in momentumsLow:
+    losses = getLosses(momentum, 1000)
+    ax.plot(losses, label='α = {0:02f}'.format(momentum))
+
+ax.legend()
+plt.show()
+
+# Plot the high momentums
+fig, ax = plt.subplots(1, 1)
+ax.title.set_text('E(t) over Time\nVarious Momentum Values')
+ax.set_xlabel('Epochs')
+ax.set_ylabel('E(t)\nMSE')
+
 for momentum in momentumsHigh:
-    losses = getLosses(momentum, 3000)
-    plt.plot(losses)
+    losses = getLosses(momentum, 1000)
+    ax.plot(losses, label='α = {0:02f}'.format(momentum))
+
+ax.legend()
 plt.show()
