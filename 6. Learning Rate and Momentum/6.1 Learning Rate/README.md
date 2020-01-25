@@ -69,3 +69,5 @@ curve over time for both a normal graph and a delta attenuated graph. Both netwo
 for 10,000 epochs. The graph produced is given below:
 
 ![Graphs](https://github.com/jlehett/Neural-Smithing/blob/master/6.%20Learning%20Rate%20and%20Momentum/6.1%20Learning%20Rate/images/17.png)
+
+### [Continue to Section 6.2](https://github.com/jlehett/Neural-Smithing/tree/master/6.%20Learning%20Rate%20and%20Momentum/6.2%20Momentum)
