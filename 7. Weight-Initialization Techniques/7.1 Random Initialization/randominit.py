@@ -151,7 +151,7 @@ def trainNetwork(network, optimizer):
     return np.asarray(losses)
 
 # Train 4 networks, each with one of the different weight initialization
-# methods. Train 10 networks on the problem for each weight initialization
+# methods. Train num_to_test networks on the problem for each weight initialization
 # method, find the average loss, and save the data.
 fig, ax = plt.subplots(1, 1)
 
