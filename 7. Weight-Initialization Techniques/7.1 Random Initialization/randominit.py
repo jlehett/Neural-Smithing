@@ -157,51 +157,60 @@ fig, ax = plt.subplots(1, 1)
 
 num_to_test = 2000
 
+losses1 = []
 for i in range(num_to_test):
-    losses1 = np.zeros(epochs)
+    losses = np.zeros(epochs)
     network, optimizer = createNetwork()
-    losses1 += trainNetwork(network, optimizer)
+    losses += trainNetwork(network, optimizer)
+    losses1.append(losses[-1])
     print(str(i+1) + '/' + str(num_to_test))
-losses1 /= num_to_test
-ax.plot(losses1, label='PyTorch Default Initialization')
 print('Network 1/4 COMPLETE . . .\n\n\n')
 
+losses2 = []
 for i in range(num_to_test):
-    losses2 = np.zeros(epochs)
+    losses = np.zeros(epochs)
     network, optimizer = createNetwork()
     network.to('cpu')
     network.initRandom(2)
     network.to(device)
-    losses2 += trainNetwork(network, optimizer)
+    losses += trainNetwork(network, optimizer)
+    losses2.append(losses[-1])
     print(str(i+1) + '/' + str(num_to_test))
-losses2 /= num_to_test
-ax.plot(losses2, label='Uniform Range (-A/sqrt(N), A/sqrt(N))\nA=2')
 print('Network 2/4 COMPLETE . . .\n\n\n')
 
+losses3 = []
 for i in range(num_to_test):
-    losses3 = np.zeros(epochs)
+    losses = np.zeros(epochs)
     network, optimizer = createNetwork()
     network.to('cpu')
     network.initRandom(3)
     network.to(device)
-    losses3 += trainNetwork(network, optimizer)
+    losses += trainNetwork(network, optimizer)
+    losses3.append(losses[-1])
     print(str(i+1) + '/' + str(num_to_test))
-losses3 /= num_to_test
-ax.plot(losses3, label='Uniform Range (-A/sqrt(N), A/sqrt(N))\nA=3')
 print('Network 3/4 COMPLETE . . .\n\n\n')
 
+losses4 = []
 for i in range(num_to_test):
-    losses4 = np.zeros(epochs)
+    losses = np.zeros(epochs)
     network, optimizer = createNetwork()
     network.to('cpu')
     network.initRandomNoVariable()
     network.to(device)
-    losses4 += trainNetwork(network, optimizer)
+    losses += trainNetwork(network, optimizer)
+    losses4.append(losses[-1])
     print(str(i+1) + '/' + str(num_to_test))
-losses4 /= num_to_test
-ax.plot(losses4, label='Uniform Range (-2.4/N, 2.4/N)')
 print('Network 4/4 COMPLETE . . .\n\n\n')
 
+ax.boxplot(
+    [losses1, losses2, losses3, losses4],
+    labels=[
+        'PyTorch Default\nInitialization',
+        'Uniform Range\n(-A/sqrt(N), A/sqrt(N))\nA=2',
+        'Uniform Range\n(-A/sqrt(N), A/sqrt(N))\nA=3',
+        'Uniform Range\n(-2.4/N, 2.4/N)'
+    ]
+)
 ax.title.set_text('E(t) over Time with Various Weight Initialization Schemes')
 ax.set_xlabel('Epochs')
 ax.set_ylabel('E(t)\nMSE')
