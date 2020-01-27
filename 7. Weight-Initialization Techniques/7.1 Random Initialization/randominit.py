@@ -75,6 +75,8 @@ def randomInit(A, tensor):
     with torch.no_grad():
         tensor *= 0.0
         tensor += torch.rand(tensorShape) * A / math.sqrt(tensorShape[1])
+        tensor *= 2.0
+        tensor -= 0.5 * tensor
     
 # Create uniform random weight initialization function with values in the
 # range (-2.4 / N, 2.4 / N), where N is the number of node inputs.
@@ -83,6 +85,67 @@ def randomInitNoVariable(tensor):
     with torch.no_grad():
         tensor *= 0.0
         tensor += torch.rand(tensorShape) * 2.4 / tensorShape[1]
+        tensor *= 2.0
+        tensor -= 0.5 * tensor
+
+# Create function that uses a formula for determining initial weight
+# range, and using that to create a random uniform weight distribution
+# Used for bipolar inputs x in {-1, +1}
+def randomUniformCalculatedBipolar(tensor, probOne=0.5):
+    tensorShape = list(tensor.shape)
+    with torch.no_grad():
+        tensor *= 0.0
+        tensor += torch.rand(tensorShape) * 1.28
+        tensor /= math.sqrt(tensorShape[1] * probOne * (1.0 - probOne))
+        tensor *= 2.0
+        tensor -= 0.5 * tensor
+
+# Create function that uses a formula for determining initial weight
+# range, and using that to create a random uniform weight distribution
+# Used for binary inputs x in {0, 1}
+def randomUniformCalculatedBinary(tensor, probOne=0.5):
+    tensorShape = list(tensor.shape)
+    with torch.no_grad():
+        tensor *= 0.0
+        tensor += torch.rand(tensorShape) * 2.55
+        tensor /= math.sqrt(tensorShape[1] * probOne * (1.0 - probOne))
+        tensor *= 2.0
+        tensor -= 0.5 * tensor
+
+# Create function that uses a formula for determining initial weight
+# range, and using that to create a random uniform weight distribution
+# Used for uniform inputs in the range [-a, +a]
+def randomUniformCalculated(tensor, absRangeValue):
+    tensorShape = list(tensor.shape)
+    with torch.no_grad():
+        tensor *= 0.0
+        tensor += torch.rand(tensorShape) * 4.4
+        tensor /= a * math.sqrt(tensorShape[1])
+        tensor *= 2.0
+        tensor -= 0.5 * tensor
+
+# Create function that uses a formula for determining initial weight
+# range, and using that to create a random uniform weight distribution
+# Used for Gaussian inputs N(0, sigma)
+def randomGaussianCalculated(tensor, sigma):
+    tensorShape = list(tensor.shape)
+    with torch.no_grad():
+        tensor *= 0.0
+        tensor += torch.rand(tensorShape) * 2.55
+        tensor /= sigma * math.sqrt(tensorShape[1])
+        tensor *= 2.0
+        tensor -= 0.5 * tensor
+
+# Create function that uses a formula for determining initial weight
+# distribution, and using that to create a random Gaussian weight
+# distribution.
+# Used for bipolar inputs x in {-1, +1}
+def gaussianCalculatedBipolar(tensor, probOne=0.5):
+    tensorShape = list(tensor.shape)
+    with torch.no_grad():
+        tensor *= 0.0
+        sigma = 0.74 / math.sqrt(tensorShape[1] * probOne * (1.0-probOne))
+        
 
 
 # Create the Neural Network class via PyTorch
@@ -111,6 +174,26 @@ class Network(nn.Module):
         randomInitNoVariable(self.fc1.weight)
         randomInitNoVariable(self.fc2.weight)
         randomInitNoVariable(self.fc3.weight)
+
+    def initRandomUniformCalculatedBipolar(self):
+        randomUniformCalculatedBipolar(self.fc1.weight)
+        randomUniformCalculatedBipolar(self.fc2.weight)
+        randomUniformCalculatedBipolar(self.fc3.weight)
+    
+    def initRandomUniformCalculatedBinary(self, probOne=0.5):
+        randomUniformCalculatedBinary(self.fc1.weight, probOne)
+        randomUniformCalculatedBinary(self.fc2.weight, probOne)
+        randomUniformCalculatedBinary(self.fc3.weight, probOne)
+
+    def initRandomUniformCalculated(self, absRangeValue):
+        randomUniformCalculated(self.fc1.weight, absRangeValue)
+        randomUniformCalculated(self.fc2.weight, absRangeValue)
+        randomUniformCalculated(self.fc3.weight, absRangeValue)
+
+    def initRandomGaussianCalculated(self, sigma):
+        randomGaussianCalculated(self.fc1.weight, sigma)
+        randomGaussianCalculated(self.fc2.weight, sigma)
+        randomGaussianCalculated(self.fc3.weight, sigma)
 
 
 # Define the loss function
