@@ -39,7 +39,7 @@ from utils.auxfunctions import mapRange
 # Set some parameters for the networks
 batch_size = 16
 lr = 0.1
-epochs = 200
+epochs = 1000
 
 # Set the pytorch device to cuda if available
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -47,8 +47,8 @@ print(device)
 
 # Define a simple classification problem
 x, y = datasets.make_blobs(
-    n_samples=50, n_features=2, centers=2, cluster_std=1.0,
-    center_box=(-10.0, 10.0), shuffle=True, random_state=None
+    n_samples=100, n_features=2, centers=2, cluster_std=0.1,
+    center_box=(-1.0, 1.0), shuffle=True, random_state=None
 )
 
 # Create PyTorch dataloader from the generated dataset
@@ -58,7 +58,7 @@ dataset = data.TensorDataset(tensor_x, tensor_y)
 dataloader = data.DataLoader(dataset, batch_size=64, shuffle=True)
 
 # Plot the dataset
-fig, ax = plt.subplots(1, 1)
+fig, ax = plt.subplots(1, 1, dpi=60)
 
 ax.scatter(x[:,0], x[:,1], c=y, s=25, marker='o')
 ax.title.set_text('Generated Classification Problem')
@@ -120,7 +120,7 @@ def randomUniformCalculated(tensor, absRangeValue):
     with torch.no_grad():
         tensor *= 0.0
         tensor += torch.rand(tensorShape) * 4.4
-        tensor /= a * math.sqrt(tensorShape[1])
+        tensor /= absRangeValue * math.sqrt(tensorShape[1])
         tensor *= 2.0
         tensor -= 0.5 * tensor
 
@@ -143,9 +143,29 @@ def randomGaussianCalculated(tensor, sigma):
 def gaussianCalculatedBipolar(tensor, probOne=0.5):
     tensorShape = list(tensor.shape)
     with torch.no_grad():
-        tensor *= 0.0
         sigma = 0.74 / math.sqrt(tensorShape[1] * probOne * (1.0-probOne))
-        
+        tensor.normal_(mean=0, std=sigma)
+
+# Create function that uses a formula for determining initial weight
+# distribution, and using that to create a random Gaussian weight 
+# distribution.
+# Used for binary inputs x in {0, 1}
+def gaussianCalculatedBinary(tensor, probOne=0.5):
+    tensorShape = list(tensor.shape)
+    with torch.no_grad():
+        sigma = 1.47 / math.sqrt(tensorShape[1] * probOne * (1.0-probOne))
+        tensor.normal_(mean=0, std=sigma)
+
+# Create function that uses a formula for determining initial weight
+# distribution, and using that to create a random Gaussian weight
+# distribution.
+# Used for uniform inputs in the range [-a, +a]
+def gaussianCalculated(tensor, absRangeValue):
+    tensorShape = list(tensor.shape)
+    with torch.no_grad():
+        sigma = 2.54 / (absRangeValue * math.sqrt(tensorShape[1]))
+        tensor.normal_(mean=0, std=sigma)
+
 
 
 # Create the Neural Network class via PyTorch
@@ -195,6 +215,21 @@ class Network(nn.Module):
         randomGaussianCalculated(self.fc2.weight, sigma)
         randomGaussianCalculated(self.fc3.weight, sigma)
 
+    def initGaussianCalculatedBipolar(self, probOne=0.5):
+        gaussianCalculatedBipolar(self.fc1.weight, probOne)
+        gaussianCalculatedBipolar(self.fc2.weight, probOne)
+        gaussianCalculatedBipolar(self.fc3.weight, probOne)
+
+    def initGaussianCalculatedBinary(self, probOne=0.5):
+        gaussianCalculatedBinary(self.fc1.weight, probOne)
+        gaussianCalculatedBinary(self.fc2.weight, probOne=0.5)
+        gaussianCalculatedBinary(self.fc3.weight, probOne=0.5)
+
+    def initGaussianCalculated(self, absRangeValue):
+        gaussianCalculated(self.fc1.weight, absRangeValue)
+        gaussianCalculated(self.fc2.weight, absRangeValue)
+        gaussianCalculated(self.fc3.weight, absRangeValue)
+
 
 # Define the loss function
 criterion = nn.MSELoss()
@@ -236,9 +271,9 @@ def trainNetwork(network, optimizer):
 # Train 4 networks, each with one of the different weight initialization
 # methods. Train num_to_test networks on the problem for each weight initialization
 # method, find the average loss, and save the data.
-fig, ax = plt.subplots(1, 1)
+fig, ax = plt.subplots(1, 1, dpi=60)
 
-num_to_test = 2000
+num_to_test = 10
 
 losses1 = []
 for i in range(num_to_test):
@@ -247,7 +282,7 @@ for i in range(num_to_test):
     losses += trainNetwork(network, optimizer)
     losses1.append(losses[-1])
     print(str(i+1) + '/' + str(num_to_test))
-print('Network 1/4 COMPLETE . . .\n\n\n')
+print('Network 1/6 COMPLETE . . .\n\n\n')
 
 losses2 = []
 for i in range(num_to_test):
@@ -259,7 +294,7 @@ for i in range(num_to_test):
     losses += trainNetwork(network, optimizer)
     losses2.append(losses[-1])
     print(str(i+1) + '/' + str(num_to_test))
-print('Network 2/4 COMPLETE . . .\n\n\n')
+print('Network 2/6 COMPLETE . . .\n\n\n')
 
 losses3 = []
 for i in range(num_to_test):
@@ -271,7 +306,7 @@ for i in range(num_to_test):
     losses += trainNetwork(network, optimizer)
     losses3.append(losses[-1])
     print(str(i+1) + '/' + str(num_to_test))
-print('Network 3/4 COMPLETE . . .\n\n\n')
+print('Network 3/6 COMPLETE . . .\n\n\n')
 
 losses4 = []
 for i in range(num_to_test):
@@ -283,15 +318,51 @@ for i in range(num_to_test):
     losses += trainNetwork(network, optimizer)
     losses4.append(losses[-1])
     print(str(i+1) + '/' + str(num_to_test))
-print('Network 4/4 COMPLETE . . .\n\n\n')
+print('Network 4/6 COMPLETE . . .\n\n\n')
+
+losses5 = []
+for i in range(num_to_test):
+    losses = np.zeros(epochs)
+    network, optimizer = createNetwork()
+    network.to('cpu')
+    network.initRandomUniformCalculated(
+        max(
+            max(np.amax(x[:, 0]), abs(np.amin(x[:, 0]))),
+            max(np.amax(x[:, 1]), abs(np.amin(x[:, 1])))
+        )
+    )
+    network.to(device)
+    losses += trainNetwork(network, optimizer)
+    losses5.append(losses[-1])
+    print(str(i+1) + '/' + str(num_to_test))
+print('Network 5/6 COMPLETE . . .\n\n\n')
+
+losses6 = []
+for i in range(num_to_test):
+    losses = np.zeros(epochs)
+    network, optimizer = createNetwork()
+    network.to('cpu')
+    network.initGaussianCalculated(
+        max(
+            max(np.amax(x[:, 0]), abs(np.amin(x[:, 0]))),
+            max(np.amax(x[:, 1]), abs(np.amin(x[:, 1])))
+        )
+    )
+    network.to(device)
+    losses += trainNetwork(network, optimizer)
+    losses6.append(losses[-1])
+    print(str(i+1) + '/' + str(num_to_test))
+print('Network 6/6 COMPLETE . . .\n\n\n')
 
 ax.boxplot(
-    [losses1, losses2, losses3, losses4],
+    [losses1, losses2, losses3, losses4, losses5, losses6],
     labels=[
         'PyTorch Default\nInitialization',
         'Uniform Range\n(-A/sqrt(N), A/sqrt(N))\nA=2',
         'Uniform Range\n(-A/sqrt(N), A/sqrt(N))\nA=3',
-        'Uniform Range\n(-2.4/N, 2.4/N)'
+        'Uniform Range\n(-2.4/N, 2.4/N)',
+        'Uniform Calculated\nUniform Inputs',
+        'Gaussian Calculated\nUniform Inputs'
     ]
 )
 ax.title.set_text('E(t) over Time with Various Weight Initialization Schemes')
