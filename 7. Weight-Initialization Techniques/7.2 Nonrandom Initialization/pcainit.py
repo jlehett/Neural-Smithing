@@ -13,6 +13,8 @@ import torch.nn.functional as F
 from torch.utils import data
 from sklearn import datasets
 from sklearn.decomposition import PCA
+import torch.optim as optim
+
 
 """
     INTERNAL UTIL LIBRARIES
@@ -45,14 +47,23 @@ from utils.auxfunctions import mapRange
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(device)
 
+
 # Create the Neural Network class via PyTorch
-class Network(nn.Module):
-    def __init__(self):
+class PCANetwork(nn.Module):
+    def __init__(self, inputSize, hiddenSize, outputSize, lr=0.1):
         super().__init__()
 
+        self.inputSize = inputSize
+        self.hiddenSize = hiddenSize
+        self.outputSize = outputSize
+
         # Define network layers
-        self.fc1 = nn.Linear(2, 2)
-        self.fc2 = nn.Linear(2, 1)
+        self.fc1 = nn.Linear(inputSize, hiddenSize)
+        self.fc2 = nn.Linear(hiddenSize, outputSize)
+
+        self.to(device)
+        self.optimizer = optim.SGD(self.parameters(), lr=lr, momentum=0.0)
+        self.criterion = nn.MSELoss()
 
     def forward(self, x):
         # Define forward pass
@@ -60,157 +71,83 @@ class Network(nn.Module):
         x = torch.sigmoid(self.fc2(x))
         return x
     
-    def initPCA(self):
+    def initPCA(self, x):
+        # Perform PCA on the dataset
+        pca = PCA(n_components=self.hiddenSize)
+        pca.fit_transform(x)
         # Initialize the first set of weights based on the PCA eigenvectors
         with torch.no_grad():
             self.fc1.weight = nn.Parameter(torch.from_numpy(pca.components_).float())
-        print(self.fc1.weight)
 
+    def trainNetwork(self, dataloader, epochs):
+        self.train()
+        # Phase 1
+        self.fc1.weight.requires_grad = False
+        losses = []
+        for epoch in range(round(epochs/2)):
 
-# Define the loss function
-criterion = nn.MSELoss()
+            running_loss = 0.0
+            for i, data in enumerate(dataloader, 0):
+                inputs, targets = data
+                inputs = inputs.to(device)
+                targets = targets.to(device)
+                targets = targets.view(-1, 1)
 
-# Define a function to create the network
-import torch.optim as optim
+                # zero the parameter gradients
+                self.optimizer.zero_grad()
 
-def createNetwork():
-    network = Network().to(device)
-    optimizer = optim.SGD(network.parameters(), lr=lr, momentum=0.0)
-    return network, optimizer
+                outputs = self(inputs)
+                loss = self.criterion(outputs, targets)
+                loss.backward()
+                self.optimizer.step()
 
-def createPCANetwork():
-    network = Network()
-    network.initPCA()
-    network = network.to(device)
-    optimizer = optim.SGD(network.parameters(), lr=lr, momentum=0.0)
-    return network, optimizer
-
-# Define a function that trains the network and returns loss history
-def trainNetwork(network, optimizer):
-    network.train()
-    losses = []
-    for epoch in range(epochs):
-
-        running_loss = 0.0
-        for i, data in enumerate(dataloader, 0):
-            inputs, targets = data
-            inputs = inputs.to(device)
-            targets = targets.to(device)
-            targets = targets.view(-1, 1)
-
-            # zero the parameter gradients
-            optimizer.zero_grad()
-
-            outputs = network(inputs)
-            loss = criterion(outputs, targets)
-            loss.backward()
-            optimizer.step()
-
-            running_loss += loss.item()
-
-        losses.append(running_loss)
-    return np.asarray(losses)
-
-def trainPCANetwork(network, optimizer):
-    network.train()
-    # Phase 1
-    network.fc1.weight.requires_grad = False
-    losses = []
-    for epoch in range(round(epochs/2)):
-
-        running_loss = 0.0
-        for i, data in enumerate(dataloader, 0):
-            inputs, targets = data
-            inputs = inputs.to(device)
-            targets = targets.to(device)
-            targets = targets.view(-1, 1)
-
-            # zero the parameter gradients
-            optimizer.zero_grad()
-
-            outputs = network(inputs)
-            loss = criterion(outputs, targets)
-            loss.backward()
-            optimizer.step()
-
-            running_loss += loss.item()
-
-        losses.append(running_loss)
-    
-    # Phase 2
-    network.fc1.weight.requires_grad = True
-    for epoch in range(round(epochs/2)):
+                running_loss += loss.item()
+            
+            losses.append(running_loss)
         
-        running_loss = 0.0
-        for i, data in enumerate(dataloader, 0):
-            inputs, targets = data
-            inputs = inputs.to(device)
-            targets = targets.to(device)
-            targets = targets.view(-1, 1)
+        # Phase 2
+        self.fc1.weight.requires_grad = True
+        for epoch in range(round(epochs/2)):
 
-            # zero the parameter gradients
-            optimizer.zero_grad()
+            running_loss = 0.0
+            for i, data in enumerate(dataloader, 0):
+                inputs, targets = data
+                inputs = inputs.to(device)
+                targets = targets.to(device)
+                targets = targets.view(-1, 1)
 
-            outputs = network(inputs)
-            loss = criterion(outputs, targets)
-            loss.backward()
-            optimizer.step()
+                # zero the parameter gradients
+                self.optimizer.zero_grad()
 
-            running_loss += loss.item()
+                outputs = self(inputs)
+                loss = self.criterion(outputs, targets)
+                loss.backward()
+                self.optimizer.step()
 
-        losses.append(running_loss)
-    return np.asarray(losses)
+                running_loss += loss.item()
+            
+            losses.append(running_loss)
+        return np.asarray(losses)
 
-# Train 2 networks, one with the weight initialized according to PyTorch defaults,
-# and one initialized with PCA and trained in the two-phase algorithm.
-fig, ax = plt.subplots(1, 1, dpi=60)
 
-num_to_test = 10
-epochs = 1000
-lr = 0.1
-batch_size = 16
-
-defLosses = []
-pcaLosses = []
-for i in range(num_to_test):
-    # Define a simple classification problem
-    x, y = datasets.make_blobs(
-        n_samples=100, n_features=2, centers=2, cluster_std=0.1,
-        center_box=(-1.0, 1.0), shuffle=True, random_state=None
-    )
-
-    # Create PyTorch dataloader from the generated dataset
-    tensor_x = torch.from_numpy(x).float()
-    tensor_y = torch.from_numpy(y).float()
-    dataset = data.TensorDataset(tensor_x, tensor_y)
-    dataloader = data.DataLoader(dataset, batch_size=64, shuffle=True)
-
-    # Perform PCA on the dataset
-    pca = PCA(n_components=2)
-    principalComponents = pca.fit_transform(x)
-
-    losses = np.zeros(epochs)
-    defNetwork, defOptimizer = createNetwork()
-    losses += trainNetwork(defNetwork, defOptimizer)
-    defLosses.append(losses[-1])
-
-    losses = np.zeros(epochs)
-    pcaNetwork, pcaOptimizer = createPCANetwork()
-    losses += trainPCANetwork(pcaNetwork, pcaOptimizer)
-    pcaLosses.append(losses[-1])
-
-    print(str(i+1) + '/' + str(num_to_test))
-
-ax.boxplot(
-    [defLosses, pcaLosses],
-    labels=[
-        'PyTorch Default\nInitialization',
-        'PCA Initialization'
-    ]
+# Define a simple classification problem
+x, y = datasets.make_classification(
+    n_samples=400, n_features=30, n_informative=10, n_redundant=2,
+    n_repeated=0, n_classes=4, n_clusters_per_class=1,
 )
-ax.title.set_text('E(t) over Time for Different Weight Initialization Schemes')
-ax.set_xlabel('Epochs')
-ax.set_ylabel('E(t)\nMSE')
 
-ax.legend()
+# Create PyTorch dataloader from the generated dataset
+tensor_x = torch.from_numpy(x).float()
+tensor_y = torch.from_numpy(y).float()
+dataset = data.TensorDataset(tensor_x, tensor_y)
+dataloader = data.DataLoader(dataset, batch_size=64, shuffle=True)
+
+# Create the PCA Initialized Network, and train it on the dataset
+pcaNetwork = PCANetwork(30, 10, 1, lr=0.01)
+pcaNetwork.initPCA(x)
+losses = pcaNetwork.trainNetwork(dataloader, epochs=2000)
+
+print(losses)
+
+plt.plot(losses)
 plt.show()
