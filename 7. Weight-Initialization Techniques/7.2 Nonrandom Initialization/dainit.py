@@ -12,7 +12,7 @@ import torch
 import torch.nn.functional as F
 from torch.utils import data
 from sklearn import datasets
-from sklearn.decomposition import PCA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import torch.optim as optim
 
 
@@ -27,20 +27,11 @@ from utils.auxfunctions import mapRange
 
 
 """
-    Principal components analysis (PCA) attempts to identify the 
-    major axes of variation of a data set -- the directions along 
-    which the data varies the most. 
-    
-    Going on the assumption that these components are important 
-    directions for the function to be learned, one can initialize 
-    the input-to-hidden weight vectors along these directions. In a
-    network with H hidden nodes the H eigenvectors with the largest
-    eigenvalues would be selected.
-    
-    In the first phase of training, the input-to-hidden weights
-    are fixed to the principal component directions while the 
-    output weights are trained. In the second phase, all weights 
-    are allowed to learn.
+    As an unsupervised method, principal components analysis
+    ignores classification information when choosing its directions.
+    Discriminant analysis, a related linear projection method, uses
+    class information and so may yield a better set o directions
+    for classification purposes.
 """
 
 # Set the pytorch device to cuda if available
@@ -49,7 +40,7 @@ print(device)
 
 
 # Create the Neural Network class via PyTorch
-class PCANetwork(nn.Module):
+class DANetwork(nn.Module):
     def __init__(self, inputSize, hiddenSize, outputSize, lr=0.1):
         super().__init__()
 
@@ -71,13 +62,14 @@ class PCANetwork(nn.Module):
         x = torch.sigmoid(self.fc2(x))
         return x
     
-    def initPCA(self, x):
-        # Perform PCA on the dataset
-        pca = PCA(n_components=self.hiddenSize)
-        pca.fit_transform(x)
+    def initDA(self, x, y):
+        # Perform DA on the dataset
+        clf = LinearDiscriminantAnalysis(n_components=self.hiddenSize)
+        clf.fit(x, y)
         # Initialize the first set of weights based on the PCA eigenvectors
+        directions = np.asarray([clf.coef_ for i in range(self.hiddenSize)])[:,0]
         with torch.no_grad():
-            self.fc1.weight = nn.Parameter(torch.from_numpy(pca.components_).float())
+            self.fc1.weight = nn.Parameter(torch.from_numpy(directions))
 
     def trainNetwork(self, dataloader, epochs):
         self.train()
