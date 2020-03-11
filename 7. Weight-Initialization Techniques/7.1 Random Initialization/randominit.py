@@ -201,7 +201,7 @@ class Network(nn.Module):
         gaussianCalculatedBipolar(self.fc3.weight, probOne)
 
     def initGaussianCalculatedBinary(self, probOne=0.5):
-        gaussianCalculatedBinary(self.fc1.weight, probOne)
+        gaussianCalculatedBinary(self.fc1.weight, probOne=0.5)
         gaussianCalculatedBinary(self.fc2.weight, probOne=0.5)
         gaussianCalculatedBinary(self.fc3.weight, probOne=0.5)
 
@@ -209,6 +209,107 @@ class Network(nn.Module):
         gaussianCalculated(self.fc1.weight, absRangeValue)
         gaussianCalculated(self.fc2.weight, absRangeValue)
         gaussianCalculated(self.fc3.weight, absRangeValue)
+
+    def trainNetwork(self, dataloader, epochs):
+        self.train()
+        losses = []
+        for epoch in range(epochs):
+
+            running_loss = 0.0
+            for i, data in enumerate(dataloader, 0):
+                inputs, targets = data
+                inputs = inputs.to(device)
+                targets = targets.to(device)
+                targets = targets.view(-1, 1)
+
+                # zero the parameter gradients
+                self.optimizer.zero_grad()
+
+                outputs = self(inputs)
+                loss = self.criterion(outputs, targets)
+                loss.backward()
+                self.optimizer.step()
+
+                running_loss += loss.item()
+            
+            losses.append(running_loss)
+        return np.asarray(losses)
+
+
+# Create the Neural Network class via PyTorch
+class OneHiddenNetwork(nn.Module):
+    def __init__(self, inputSize, hiddenSize, outputSize, lr=0.1):
+        super().__init__()
+
+        # Define network layers
+        self.fc1 = nn.Linear(inputSize, hiddenSize)
+        self.fc2 = nn.Linear(hiddenSize, outputSize)
+
+        # Define parameters
+        self.criterion = nn.MSELoss()
+
+        self.to(device)
+        self.optimizer = optim.SGD(self.parameters(), lr=lr, momentum=0.0)
+
+    def forward(self, x):
+        # define forward pass
+        x = torch.sigmoid(self.fc1(x))
+        x = torch.sigmoid(self.fc2(x))
+        return x
+
+    def initRandom(self, A):
+        network.to('cpu')
+        randomInit(A, self.fc1.weight)
+        randomInit(A, self.fc2.weight)
+        network.to(device)
+
+    def initRandomNoVariable(self):
+        network.to('cpu')
+        randomInitNoVariable(self.fc1.weight)
+        randomInitNoVariable(self.fc2.weight)
+        network.to(device)
+
+    def initRandomUniformCalculatedBipolar(self):
+        network.to('cpu')
+        randomUniformCalculatedBipolar(self.fc1.weight)
+        randomUniformCalculatedBipolar(self.fc2.weight)
+        network.to(device)
+    
+    def initRandomUniformCalculatedBinary(self, probOne=0.5):
+        network.to('cpu')
+        randomUniformCalculatedBinary(self.fc1.weight, probOne)
+        randomUniformCalculatedBinary(self.fc2.weight, probOne)
+        network.to(device)
+
+    def initRandomUniformCalculated(self, absRangeValue):
+        network.to('cpu')
+        randomUniformCalculated(self.fc1.weight, absRangeValue)
+        randomUniformCalculated(self.fc2.weight, absRangeValue)
+        network.to(device)
+
+    def initRandomGaussianCalculated(self, sigma):
+        network.to('cpu')
+        randomGaussianCalculated(self.fc1.weight, sigma)
+        randomGaussianCalculated(self.fc2.weight, sigma)
+        network.to(device)
+
+    def initGaussianCalculatedBipolar(self, probOne=0.5):
+        network.to('cpu')
+        gaussianCalculatedBipolar(self.fc1.weight, probOne)
+        gaussianCalculatedBipolar(self.fc2.weight, probOne)
+        network.to(device)
+
+    def initGaussianCalculatedBinary(self, probOne=0.5):
+        network.to('cpu')
+        gaussianCalculatedBinary(self.fc1.weight, probOne=0.5)
+        gaussianCalculatedBinary(self.fc2.weight, probOne=0.5)
+        network.to(device)
+
+    def initGaussianCalculated(self, absRangeValue):
+        network.to('cpu')
+        gaussianCalculated(self.fc1.weight, absRangeValue)
+        gaussianCalculated(self.fc2.weight, absRangeValue)
+        network.to(device)
 
     def trainNetwork(self, dataloader, epochs):
         self.train()
